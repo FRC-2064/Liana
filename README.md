@@ -46,4 +46,4 @@ WRITES
 [true - false]
 
 - [ ] retry connect to NTServer
-![UI](Constrols.jpg)
+![UI](Controls.jpg)
