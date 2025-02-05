@@ -14,7 +14,7 @@ class ButtonSender extends StatefulWidget {
   final NT4Topic ntTopic;
   final NTService ntService;
   final String buttonText;
-  final int val;
+  final dynamic val;
 
 
   @override

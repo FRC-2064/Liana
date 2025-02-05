@@ -25,7 +25,7 @@ class NTService {
       onConnect: () {
         print('Connected to $ip');
         _isConnected = true;
-        _retryCount = 0; // Reset retries on success
+        _retryCount = 0;
       },
       onDisconnect: () {
         print('Disconnected from $ip');
@@ -57,4 +57,12 @@ class NTService {
   void postValue(NT4Topic topic, dynamic value) {
     client.addSample(topic, value);
   }
+
+  NT4Subscription subscribeValue(NT4Topic topic) {
+    print('Subscribing to topic: ${topic.name}');
+    NT4Subscription sub = client.subscribePeriodic(topic.name, 0.1);
+    print('Subscription created: ${sub.stream()}');
+    return sub;
+  }
+
 }
