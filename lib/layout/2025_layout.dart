@@ -1,160 +1,90 @@
-import 'package:control_board/widgets/bool_reader.dart';
+import 'package:control_board/services/control_board.dart';
+import 'package:control_board/utils.dart';
+import 'package:control_board/widgets/bool_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:control_board/services/nt_service.dart';
-import 'package:control_board/widgets/button_sender.dart';
-import 'package:nt4/nt4.dart';
+import 'package:control_board/widgets/hexagon_button.dart';
 
 class MainLayout extends StatelessWidget {
-  final NTService client;
-  final Map<String, NT4Topic> ntTopics;
+  final ControlBoard controlBoard;
 
-  const MainLayout({super.key, required this.client, required this.ntTopics});
+  MainLayout({super.key, required String serverAddress})
+      : controlBoard = ControlBoard(serverBaseAddress: serverAddress);
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Row(
-        children: [Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Coral Level'),
-            // Coral Levels
-            ButtonSender(
-              ntTopic: ntTopics['Level']!,
-              ntService: client,
-              buttonText: 'Algae Remove',
-              val: 0
+      child: Row(children: [
+        Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text('Coral Level'),
+          // Coral Levels
+          for (int level in Utils.reefLevels)
+            TextButton(
+              child: Text('Level $level'),
+              onPressed: () => controlBoard.setReefLevel(level),
             ),
-            ButtonSender(
-              ntTopic: ntTopics['Level']!,
-              ntService: client,
-              buttonText: 'Level 1',
-              val: 1
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['Level']!,
-              ntService: client,
-              buttonText: 'Level 2',
-              val: 2
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['Level']!,
-              ntService: client,
-              buttonText: 'Level 3',
-              val: 3
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['Level']!,
-              ntService: client,
-              buttonText: 'Level 4',
-              val: 4
-            )
-          ]
-        ),
+        ]),
         Column(
           children: [
             Text('Reef Location'),
             // Reef Location
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'A',
-              val: 'A'
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'B',
-              val: 'B'
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'C',
-              val: 'C'
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'D',
-              val: 'D'
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'E',
-              val: 'E'
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'F',
-              val: 'F'
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'G',
-              val: 'G'
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'H',
-              val: 'H'
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'I',
-              val: 'I'
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'J',
-              val: 'J'
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'K',
-              val: 'K'
-            ),
-            ButtonSender(
-              ntTopic: ntTopics['ScoreLocation']!,
-              ntService: client,
-              buttonText: 'L',
-              val: 'L'
-            ),
+            for (String location in Utils.reefLocations)
+              HexagonButton(
+                  name: 'Reef $location',
+                  setFunction: () => controlBoard.setReefLocation(location),
+              setVal: location,
+              locationListenable: controlBoard.reefLocation())
           ],
         ),
         Column(
           children: [
             Text('Cage Location'),
             // Test button
-            ButtonSender(
-              ntTopic: ntTopics['Cage']!,
-              ntService: client, 
-              buttonText: 'Left Cage', 
-              val: 'LEFT'
-              ),
-              ButtonSender(
-              ntTopic: ntTopics['Cage']!,
-              ntService: client, 
-              buttonText: 'Center Cage', 
-              val: 'CENTER'
-              ),
-              ButtonSender(
-                ntTopic: ntTopics['Cage']!,
-                ntService: client, 
-                buttonText: 'Right Cage', 
-                val: 'RIGHT'
+            for (String location in Utils.cageLocations)
+              TextButton(
+                child: Text('Cage $location'),
+                onPressed: () => controlBoard.setCageLocation(location),
               )
           ],
+        ),
+        Column(
+          children: [
+            Text('Score Location'),
+            // Test button
+            for (String location in Utils.scoreLocations)
+              TextButton(
+                child: Text('Score $location'),
+                onPressed: () => controlBoard.setScoreLocation(location),
+              )
+          ],
+        ),
+        Column(
+          children: [
+            Text('Feeder Location'),
+            // Test button
+            for (String location in Utils.feederLocations)
+              TextButton(
+                child: Text('Feeder $location'),
+                onPressed: () => controlBoard.setFeederLocation(location),
+              )
+          ],
+        ),
+        Column(
+          children: [
+            BoolIndicator(
+              name: 'has Algae',
+              boolListenable: controlBoard.hasAlgae(),
+            ),
+            BoolIndicator(
+              name: 'has Coral',
+              boolListenable: controlBoard.hasCoral(),
+            ),
+            BoolIndicator(
+              name: 'Clamped',
+              boolListenable: controlBoard.hasClamped(),
+            ),
+          ],
         )
-        ]
-      ),
+      ]),
     );
   }
 }
