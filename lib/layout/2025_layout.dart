@@ -29,10 +29,12 @@ class MainLayout extends StatelessWidget {
             // Reef Location
             for (String location in Utils.reefLocations)
               HexagonButton(
-                  name: 'Reef $location',
+                  name: location,
                   setFunction: () => controlBoard.setReefLocation(location),
               setVal: location,
-              locationListenable: controlBoard.reefLocation())
+              locationListenable: controlBoard.reefLocation(),
+                key: Key(location),
+              )
           ],
         ),
         Column(
@@ -73,6 +75,7 @@ class MainLayout extends StatelessWidget {
             BoolIndicator(
               name: 'has Algae',
               boolListenable: controlBoard.hasAlgae(),
+              
             ),
             BoolIndicator(
               name: 'has Coral',
