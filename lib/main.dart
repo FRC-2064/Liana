@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Control Board',
-      home: const MyLayoutExample(),
+      home: const MyHomePage(title: 'Control Board',),
     );
   }
 }

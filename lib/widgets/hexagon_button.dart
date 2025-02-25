@@ -21,14 +21,28 @@ class HexagonButton extends StatefulWidget {
 }
 
 class _HexagonButtonState extends State<HexagonButton> {
+
+  @override
+  void didUpdateWidget(HexagonButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    setState(() {
+
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<String>(
       stream: widget.locationListenable,
       initialData: '',
-      builder: (context, snapshot) => CustomPaint(
+      builder: (context, snapshot) {
+        print('StreamBuilder rebuilding: ${snapshot.data}');
+        final isSelected = snapshot.hasData && snapshot.data == widget.setVal;
+        print('Is selected: $isSelected');
+        return CustomPaint(
         painter: HexagonPainter(
-          color: snapshot.hasData && snapshot.data == widget.setVal
+          color: isSelected
               ? Colors.green[700]!
               : Colors.transparent,
           borderColor: Colors.grey,
@@ -65,7 +79,7 @@ class _HexagonButtonState extends State<HexagonButton> {
             ),
           ),
         ),
-      ),
+      );}
     );
   }
 }

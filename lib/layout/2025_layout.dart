@@ -4,12 +4,17 @@ import 'package:control_board/widgets/bool_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:control_board/widgets/hexagon_button.dart';
 
-class MainLayout extends StatelessWidget {
+class MainLayout extends StatefulWidget {
   final ControlBoard controlBoard;
 
   MainLayout({super.key, required String serverAddress})
       : controlBoard = ControlBoard(serverBaseAddress: serverAddress);
 
+  @override
+  State<MainLayout> createState() => _MainLayoutState();
+}
+
+class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -20,7 +25,7 @@ class MainLayout extends StatelessWidget {
           for (int level in Utils.reefLevels)
             TextButton(
               child: Text('Level $level'),
-              onPressed: () => controlBoard.setReefLevel(level),
+              onPressed: () => widget.controlBoard.setReefLevel(level),
             ),
         ]),
         Column(
@@ -29,10 +34,10 @@ class MainLayout extends StatelessWidget {
             // Reef Location
             for (String location in Utils.reefLocations)
               HexagonButton(
-                  name: location,
-                  setFunction: () => controlBoard.setReefLocation(location),
-              setVal: location,
-              locationListenable: controlBoard.reefLocation(),
+                name: location,
+                setFunction: () => widget.controlBoard.setReefLocation(location),
+                setVal: location,
+                locationListenable: widget.controlBoard.reefLocation(),
                 key: Key(location),
               )
           ],
@@ -44,7 +49,7 @@ class MainLayout extends StatelessWidget {
             for (String location in Utils.cageLocations)
               TextButton(
                 child: Text('Cage $location'),
-                onPressed: () => controlBoard.setCageLocation(location),
+                onPressed: () => widget.controlBoard.setCageLocation(location),
               )
           ],
         ),
@@ -55,7 +60,7 @@ class MainLayout extends StatelessWidget {
             for (String location in Utils.scoreLocations)
               TextButton(
                 child: Text('Score $location'),
-                onPressed: () => controlBoard.setScoreLocation(location),
+                onPressed: () => widget.controlBoard.setScoreLocation(location),
               )
           ],
         ),
@@ -66,7 +71,7 @@ class MainLayout extends StatelessWidget {
             for (String location in Utils.feederLocations)
               TextButton(
                 child: Text('Feeder $location'),
-                onPressed: () => controlBoard.setFeederLocation(location),
+                onPressed: () => widget.controlBoard.setFeederLocation(location),
               )
           ],
         ),
@@ -74,18 +79,29 @@ class MainLayout extends StatelessWidget {
           children: [
             BoolIndicator(
               name: 'has Algae',
-              boolListenable: controlBoard.hasAlgae(),
-              
+              boolListenable: widget.controlBoard.hasAlgae(),
             ),
             BoolIndicator(
               name: 'has Coral',
-              boolListenable: controlBoard.hasCoral(),
+              boolListenable: widget.controlBoard.hasCoral(),
             ),
             BoolIndicator(
               name: 'Clamped',
-              boolListenable: controlBoard.hasClamped(),
+              boolListenable: widget.controlBoard.hasClamped(),
             ),
           ],
+        ),
+        StreamBuilder(
+          stream: widget.controlBoard.clock(),
+          builder: (context, snapshot) {
+            return Text(
+              switch (snapshot.data) {
+                null => '',
+                '-1.0' => 'STOPPED',
+                _ => snapshot.data!.toString()
+              },
+            );
+          },
         )
       ]),
     );

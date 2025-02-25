@@ -28,7 +28,7 @@ class ControlBoard {
       onConnect: () => _isConnected = true,
       onDisconnect: () => _isConnected = false);
 
-      _clock = _client.subscribePeriodic('/ControlBoard/Time', subscriberInterval);
+      _clock = _client.subscribePeriodic('/ControlBoard/GameTime', subscriberInterval);
       _hasCoral = _client.subscribePeriodic('/ControlBoard/Robot/HasCoral', subscriberInterval);
       _hasAlgae = _client.subscribePeriodic('/ControlBoard/Robot/HasAlgae', subscriberInterval);
       _hasScored = _client.subscribePeriodic('/ControlBoard/Robot/HasScored', subscriberInterval);
@@ -91,8 +91,8 @@ class ControlBoard {
     return _hasScored.stream().map((clamped) => clamped is bool);
   }
 
-  Stream<Duration> clock() {
-    return _clock.stream().map((time) => Duration(seconds: time as int));
+  Stream<String> clock() {
+    return _clock.stream().map((time) => time.toString());
   }
 
   Stream<String> selectedAuto() {
@@ -107,7 +107,6 @@ class ControlBoard {
   Stream<bool> connectionStatus() {
     return _client.connectionStatusStream();
   }
-
 
   bool get isConnected => _isConnected;
 
