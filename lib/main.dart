@@ -1,4 +1,6 @@
 import 'package:control_board/layout/2025_layout.dart';
+import 'package:control_board/layout/example_layout.dart';
+import 'package:control_board/layout/hex_stack_layout.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Control Board',
-      home: const MyHomePage(title: 'Control Board'),
+      home: const MyLayoutExample(),
     );
   }
 }
