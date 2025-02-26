@@ -1,6 +1,9 @@
 import 'package:control_board/services/control_board.dart';
 import 'package:control_board/utils.dart';
 import 'package:control_board/widgets/bool_indicator.dart';
+import 'package:control_board/widgets/hexagon_stack.dart';
+import 'package:control_board/widgets/status_button.dart';
+import 'package:control_board/widgets/timer.dart';
 import 'package:flutter/material.dart';
 import 'package:control_board/widgets/hexagon_button.dart';
 
@@ -23,34 +26,30 @@ class _MainLayoutState extends State<MainLayout> {
           Text('Coral Level'),
           // Coral Levels
           for (int level in Utils.reefLevels)
-            TextButton(
-              child: Text('Level $level'),
-              onPressed: () => widget.controlBoard.setReefLevel(level),
-            ),
-        ]),
-        Column(
-          children: [
-            Text('Reef Location'),
-            // Reef Location
-            for (String location in Utils.reefLocations)
-              HexagonButton(
-                name: location,
-                setFunction: () => widget.controlBoard.setReefLocation(location),
-                setVal: location,
-                locationListenable: widget.controlBoard.reefLocation(),
-                key: Key(location),
-              )
-          ],
+            StatusButton(
+                name: switch (level) {
+                  0 => 'Remove Algae',
+                  1 => 'Level 1 (Trough)',
+                  _ => 'Level $level',
+                },
+                setFunction: () => widget.controlBoard.setReefLevel(level),
+                listenable: widget.controlBoard.reefLevel(),
+                setVal: level)
+        ]
         ),
+            // Reef Location
+            HexagonStack(controlBoard: widget.controlBoard),
+
         Column(
           children: [
             Text('Cage Location'),
             // Test button
             for (String location in Utils.cageLocations)
-              TextButton(
-                child: Text('Cage $location'),
-                onPressed: () => widget.controlBoard.setCageLocation(location),
-              )
+              StatusButton(
+                  name: location,
+                  setFunction: () => widget.controlBoard.setCageLocation(location),
+                  listenable: widget.controlBoard.cageLocation(),
+                  setVal: location)
           ],
         ),
         Column(
@@ -58,10 +57,11 @@ class _MainLayoutState extends State<MainLayout> {
             Text('Score Location'),
             // Test button
             for (String location in Utils.scoreLocations)
-              TextButton(
-                child: Text('Score $location'),
-                onPressed: () => widget.controlBoard.setScoreLocation(location),
-              )
+              StatusButton(
+                  name: location,
+                  setFunction: () => widget.controlBoard.setScoreLocation(location),
+                  listenable: widget.controlBoard.scoreLocation(),
+                  setVal: location)
           ],
         ),
         Column(
@@ -69,10 +69,11 @@ class _MainLayoutState extends State<MainLayout> {
             Text('Feeder Location'),
             // Test button
             for (String location in Utils.feederLocations)
-              TextButton(
-                child: Text('Feeder $location'),
-                onPressed: () => widget.controlBoard.setFeederLocation(location),
-              )
+              StatusButton(
+                  name: location,
+                  setFunction: () => widget.controlBoard.setFeederLocation(location),
+                  listenable: widget.controlBoard.feederLocation(),
+                  setVal: location)
           ],
         ),
         Column(
@@ -91,18 +92,7 @@ class _MainLayoutState extends State<MainLayout> {
             ),
           ],
         ),
-        StreamBuilder(
-          stream: widget.controlBoard.clock(),
-          builder: (context, snapshot) {
-            return Text(
-              switch (snapshot.data) {
-                null => '',
-                '-1.0' => 'STOPPED',
-                _ => snapshot.data!.toString()
-              },
-            );
-          },
-        )
+        Timer(timeListenable: widget.controlBoard.clock())
       ]),
     );
   }

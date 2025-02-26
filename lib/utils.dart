@@ -2,18 +2,18 @@
 class Utils {
 
   static List<String> reefLocations = [
-    'A',
-    'B',
-    'C',
+    'L',
+    'K',
+    'J',
+    'I',
+    'H',
+    'G',
+    'F',
+    'E',
     'D',
-    // 'E',
-    // 'F',
-    // 'G',
-    // 'H',
-    // 'I',
-    // 'J',
-    // 'K',
-    // 'L',
+    'C',
+    'B',
+    'A'
   ];
 
   static List<int> reefLevels = [

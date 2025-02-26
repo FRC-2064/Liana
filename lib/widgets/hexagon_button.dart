@@ -37,9 +37,7 @@ class _HexagonButtonState extends State<HexagonButton> {
       stream: widget.locationListenable,
       initialData: '',
       builder: (context, snapshot) {
-        print('StreamBuilder rebuilding: ${snapshot.data}');
         final isSelected = snapshot.hasData && snapshot.data == widget.setVal;
-        print('Is selected: $isSelected');
         return CustomPaint(
         painter: HexagonPainter(
           color: isSelected
@@ -69,12 +67,6 @@ class _HexagonButtonState extends State<HexagonButton> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                if (snapshot.hasData && snapshot.data == widget.setVal)
-                  const Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Icon(Icons.check, color: Colors.white, size: 20),
-                  ),
               ],
             ),
           ),

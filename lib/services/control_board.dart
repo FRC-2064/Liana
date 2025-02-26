@@ -11,6 +11,10 @@ class ControlBoard {
   late NT4Subscription _clamped;
   late NT4Subscription _selectedAuto;
   late NT4Subscription _reefLocationSub;
+  late NT4Subscription _reefLevelSub;
+  late NT4Subscription _feederLocationSub;
+  late NT4Subscription _cageLocationSub;
+  late NT4Subscription _scoreLocationSub;
 
   late NT4Topic _reefLocation;
   late NT4Topic _reefLevel;
@@ -28,13 +32,18 @@ class ControlBoard {
       onConnect: () => _isConnected = true,
       onDisconnect: () => _isConnected = false);
 
-      _clock = _client.subscribePeriodic('/ControlBoard/GameTime', subscriberInterval);
+      _clock = _client.subscribePeriodic('/ControlBoard/Robot/GameTime', subscriberInterval);
       _hasCoral = _client.subscribePeriodic('/ControlBoard/Robot/HasCoral', subscriberInterval);
       _hasAlgae = _client.subscribePeriodic('/ControlBoard/Robot/HasAlgae', subscriberInterval);
       _hasScored = _client.subscribePeriodic('/ControlBoard/Robot/HasScored', subscriberInterval);
       _clamped = _client.subscribePeriodic('/ControlBoard/Robot/Clamped', subscriberInterval);
       _selectedAuto = _client.subscribePeriodic('/ControlBoard/Robot/SelectedAuto', subscriberInterval);
-      _reefLocationSub = _client.subscribePeriodic('/ControlBoard/Reef/Location', subscriberInterval);
+
+      _reefLocationSub = _client.subscribePeriodic('/ControlBoard/Robot/Reef/Location', subscriberInterval);
+      _reefLevelSub = _client.subscribePeriodic('/ControlBoard/Robot/Reef/Level', subscriberInterval);
+      _feederLocationSub = _client.subscribePeriodic('/ControlBoard/Robot/Feeder', subscriberInterval);
+      _cageLocationSub = _client.subscribePeriodic('/ControlBoard/Robot/Barge/Cage', subscriberInterval);
+      _scoreLocationSub = _client.subscribePeriodic('/ControlBoard/Robot/ScoreLocation', subscriberInterval);
 
       _reefLocation = _client.publishNewTopic('/ControlBoard/Reef/Location', NT4TypeStr.typeStr);
       _reefLevel = _client.publishNewTopic('/ControlBoard/Reef/Level', NT4TypeStr.typeInt);
@@ -80,15 +89,15 @@ class ControlBoard {
   } 
   
   Stream<bool> hasAlgae() {
-    return _hasAlgae.stream().map((clamped) => clamped is bool);
+    return _hasAlgae.stream().map((clamped) => clamped as bool);
   } 
 
     Stream<bool> hasCoral() {
-    return _hasCoral.stream().map((clamped) => clamped is bool);
+    return _hasCoral.stream().map((clamped) => clamped as bool);
   } 
 
     Stream<bool> hasScored() {
-    return _hasScored.stream().map((clamped) => clamped is bool);
+    return _hasScored.stream().map((clamped) => clamped as bool);
   }
 
   Stream<String> clock() {
@@ -103,6 +112,21 @@ class ControlBoard {
     return _reefLocationSub.stream().map((loc) => loc as String);
   }
 
+  Stream<double> reefLevel() {
+    return _reefLevelSub.stream().map((level) => level as double);
+  }
+
+  Stream<String> cageLocation() {
+    return _cageLocationSub.stream().map((loc) => loc as String);
+  }
+
+  Stream<String> feederLocation() {
+    return _feederLocationSub.stream().map((loc) => loc as String);
+  }
+
+  Stream<String> scoreLocation() {
+    return _scoreLocationSub.stream().map((loc) => loc as String);
+  }
 
   Stream<bool> connectionStatus() {
     return _client.connectionStatusStream();
