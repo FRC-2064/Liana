@@ -1,5 +1,5 @@
 import 'package:control_board/services/control_board.dart';
-import 'package:control_board/utils.dart';
+import 'package:control_board/utils/value_lists.dart';
 import 'package:control_board/widgets/bool_indicator.dart';
 import 'package:control_board/widgets/hexagon_stack.dart';
 import 'package:control_board/widgets/status_button.dart';
@@ -20,12 +20,13 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Row(children: [
+    return Row(
+          children: [
+
         Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text('Coral Level'),
+          Timer(timeListenable: widget.controlBoard.clock()),
           // Coral Levels
-          for (int level in Utils.reefLevels)
+          for (int level in ValueLists.reefLevels)
             StatusButton(
                 name: switch (level) {
                   0 => 'Remove Algae',
@@ -42,9 +43,8 @@ class _MainLayoutState extends State<MainLayout> {
 
         Column(
           children: [
-            Text('Cage Location'),
             // Test button
-            for (String location in Utils.cageLocations)
+            for (String location in ValueLists.cageLocations)
               StatusButton(
                   name: location,
                   setFunction: () => widget.controlBoard.setCageLocation(location),
@@ -54,9 +54,8 @@ class _MainLayoutState extends State<MainLayout> {
         ),
         Column(
           children: [
-            Text('Score Location'),
             // Test button
-            for (String location in Utils.scoreLocations)
+            for (String location in ValueLists.scoreLocations)
               StatusButton(
                   name: location,
                   setFunction: () => widget.controlBoard.setScoreLocation(location),
@@ -66,9 +65,8 @@ class _MainLayoutState extends State<MainLayout> {
         ),
         Column(
           children: [
-            Text('Feeder Location'),
             // Test button
-            for (String location in Utils.feederLocations)
+            for (String location in ValueLists.feederLocations)
               StatusButton(
                   name: location,
                   setFunction: () => widget.controlBoard.setFeederLocation(location),
@@ -92,8 +90,6 @@ class _MainLayoutState extends State<MainLayout> {
             ),
           ],
         ),
-        Timer(timeListenable: widget.controlBoard.clock())
-      ]),
-    );
+      ]);
   }
 }

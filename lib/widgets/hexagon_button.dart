@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../utils/controlboard_colors.dart';
+
 class HexagonButton extends StatefulWidget {
   const HexagonButton({
     super.key,
@@ -41,9 +43,9 @@ class _HexagonButtonState extends State<HexagonButton> {
         return CustomPaint(
         painter: HexagonPainter(
           color: isSelected
-              ? Colors.green[700]!
-              : Colors.transparent,
-          borderColor: Colors.grey,
+              ? ControlBoardColors.statusSelected
+              : ControlBoardColors.statusUnselected,
+          borderColor: ControlBoardColors.border,
         ),
         child: SizedBox(
           width: 100,
@@ -59,10 +61,10 @@ class _HexagonButtonState extends State<HexagonButton> {
                 Center(
                   child: Text(
                     widget.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: ControlBoardColors.buttonText,
                     ),
                     textAlign: TextAlign.center,
                   ),

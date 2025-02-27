@@ -19,7 +19,9 @@ class _TimerState extends State<Timer> {
 
   String _formatTime(String secondsString) {
     try {
-      // Parse the seconds value, which is in 0.000 format
+      if (secondsString == '-1') {
+        return '--:--';
+      }
       double seconds = double.parse(secondsString);
 
       // Convert to M:SS format
@@ -29,7 +31,7 @@ class _TimerState extends State<Timer> {
 
       return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
     } catch (e) {
-      return 'Invalid Time';
+      return '--:--';
     }
   }
 
@@ -44,12 +46,10 @@ class _TimerState extends State<Timer> {
 
         String timeString = _formatTime(snapshot.data!);
 
-        // Check if we need to toggle color (between 30 and 25 seconds)
         try {
           double seconds = double.parse(snapshot.data!);
           int currentSecond = seconds.floor();
 
-          // Toggle color when second changes and within the range
           if (seconds <= 30 && seconds > 25 && currentSecond != _lastSecond) {
             _isRed = !_isRed;
             _lastSecond = currentSecond;
@@ -60,8 +60,9 @@ class _TimerState extends State<Timer> {
           return Text(
             timeString,
             style: TextStyle(
-              color: _isRed ? Colors.red : Colors.black,
+              color: _isRed ? Colors.red : Colors.white,
               fontWeight: FontWeight.bold,
+              fontSize: 125,
             ),
           );
         } catch (e) {
@@ -69,8 +70,9 @@ class _TimerState extends State<Timer> {
           return Text(
             timeString,
             style: const TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontWeight: FontWeight.bold,
+              fontSize: 125,
             ),
           );
         }

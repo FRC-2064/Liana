@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:control_board/services/control_board.dart';
-import 'package:control_board/utils.dart';
+import 'package:control_board/utils/value_lists.dart';
 import 'package:control_board/widgets/hexagon_button.dart';
 import 'package:flutter/material.dart';
 
@@ -105,10 +105,10 @@ class _HexagonStackState extends State<HexagonStack> {
               child: Transform.translate(
                 offset: Offset(-outerHexRadius, -hexHeight / 2),
                 child: HexagonButton(
-                  name: Utils.reefLocations[i],
+                  name: ValueLists.reefLocations[i],
                   setFunction: () =>
-                      widget.controlBoard.setReefLocation(Utils.reefLocations[i]),
-                  setVal: Utils.reefLocations[i],
+                      widget.controlBoard.setReefLocation(ValueLists.reefLocations[i]),
+                  setVal: ValueLists.reefLocations[i],
                   locationListenable: widget.controlBoard.reefLocation(),
                 ),
               ),
