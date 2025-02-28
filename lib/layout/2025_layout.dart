@@ -28,6 +28,7 @@ class _MainLayoutState extends State<MainLayout> {
     super.initState();
     selectedAuto = ValueLists.autoList.first;
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,20 +43,19 @@ class _MainLayoutState extends State<MainLayout> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                    Timer(timeListenable: widget.controlBoard.clock()),
-
+                  Timer(timeListenable: widget.controlBoard.clock()),
                   const SizedBox(height: 16),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       BoolIndicator(
-                        name: 'has Algae',
+                        name: 'Algae',
                         boolListenable: widget.controlBoard.hasAlgae(),
                       ),
                       const SizedBox(width: 2),
                       BoolIndicator(
-                        name: 'has Coral',
+                        name: 'Coral',
                         boolListenable: widget.controlBoard.hasCoral(),
                       ),
                       const SizedBox(width: 2),
@@ -67,8 +67,7 @@ class _MainLayoutState extends State<MainLayout> {
                   ),
                   const SizedBox(height: 16),
                   SelectedAuto(
-                      setFunction: (a) => widget.controlBoard.setAuto(a)
-                  ),
+                      setFunction: (a) => widget.controlBoard.setAuto(a)),
                   const SizedBox(height: 16),
                   StreamBuilder(
                       stream: widget.controlBoard.selectedAuto(),
@@ -76,7 +75,7 @@ class _MainLayoutState extends State<MainLayout> {
                         selectedAuto = snapshot.data;
                         String assetString = switch (selectedAuto) {
                           null => 'assets/gifs/default.gif',
-                        _ => 'assets/gifs/$selectedAuto.gif'
+                          _ => 'assets/gifs/$selectedAuto.gif'
                         };
                         return Expanded(
                           child: Center(
@@ -92,9 +91,7 @@ class _MainLayoutState extends State<MainLayout> {
                             ),
                           ),
                         );
-                      }
-                  ),
-
+                      }),
                 ],
               ),
             ),
@@ -162,7 +159,7 @@ class _MainLayoutState extends State<MainLayout> {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 75),
+                  const SizedBox(height: 50),
                 ],
               ),
             ),
@@ -192,10 +189,10 @@ class _MainLayoutState extends State<MainLayout> {
                                   1 => 'Level 1 (Trough)',
                                   _ => 'Level $level',
                                 },
-                                setFunction: () => widget.controlBoard.setReefLevel(level),
+                                setFunction: () =>
+                                    widget.controlBoard.setReefLevel(level),
                                 listenable: widget.controlBoard.reefLevel(),
-                                setVal: level)
-                        ),
+                                setVal: level)),
                     ],
                   ),
                 ],

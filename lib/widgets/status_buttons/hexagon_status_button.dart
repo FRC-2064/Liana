@@ -2,79 +2,82 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../utils/control_board_colors.dart';
+import '../../utils/control_board_colors.dart';
 
-class HexagonButton extends StatefulWidget {
-  const HexagonButton({
+class HexagonStatusButton extends StatefulWidget {
+  const HexagonStatusButton({
     super.key,
     required this.name,
     required this.setFunction,
     required this.setVal,
     required this.locationListenable,
+    required this.height,
+    required this.width,
+    required this.fontSize,
   });
 
   final String name;
   final VoidCallback setFunction;
   final Stream<String> locationListenable;
   final String setVal;
+  final double height;
+  final double width;
+  final double fontSize;
 
   @override
-  State<HexagonButton> createState() => _HexagonButtonState();
+  State<HexagonStatusButton> createState() => _HexagonStatusButtonState();
 }
 
-class _HexagonButtonState extends State<HexagonButton> {
-
+class _HexagonStatusButtonState extends State<HexagonStatusButton> {
   @override
-  void didUpdateWidget(HexagonButton oldWidget) {
+  void didUpdateWidget(HexagonStatusButton oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<String>(
-      stream: widget.locationListenable,
-      initialData: '',
-      builder: (context, snapshot) {
-        final isSelected = snapshot.hasData && snapshot.data == widget.setVal;
-        return CustomPaint(
-        painter: HexagonPainter(
-          color: isSelected
-              ? ControlBoardColors.statusSelected
-              : ControlBoardColors.statusUnselected,
-          borderColor: ControlBoardColors.border,
-        ),
-        child: SizedBox(
-          width: 100,
-          height: 110,
-          child: TextButton(
-            style: TextButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              padding: EdgeInsets.zero,
+        stream: widget.locationListenable,
+        initialData: '',
+        builder: (context, snapshot) {
+          final isSelected = snapshot.hasData && snapshot.data == widget.setVal;
+          return CustomPaint(
+            painter: HexagonPainter(
+              color: isSelected
+                  ? ControlBoardColors.statusSelected
+                  : ControlBoardColors.statusUnselected,
+              borderColor: ControlBoardColors.border,
             ),
-            onPressed: widget.setFunction,
-            child: Stack(
-              children: [
-                Center(
-                  child: Text(
-                    widget.name,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: ControlBoardColors.buttonText,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+            child: SizedBox(
+              width: widget.width,
+              height: widget.height,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  padding: EdgeInsets.zero,
                 ),
-              ],
+                onPressed: widget.setFunction,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Text(
+                        widget.name,
+                        style: TextStyle(
+                          fontSize: widget.fontSize,
+                          fontWeight: FontWeight.bold,
+                          color: ControlBoardColors.buttonText,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
-      );}
-    );
+          );
+        });
   }
 }
 

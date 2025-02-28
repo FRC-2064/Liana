@@ -1,18 +1,33 @@
 import 'dart:math';
 import 'package:control_board/services/control_board.dart';
+import 'package:control_board/utils/control_board_colors.dart';
 import 'package:control_board/utils/value_lists.dart';
-import 'package:control_board/widgets/hexagon_button.dart';
+import 'package:control_board/widgets/status_buttons/hexagon_status_button.dart';
 import 'package:flutter/material.dart';
 
 class HexagonStack extends StatefulWidget {
   const HexagonStack({
     required this.controlBoard,
-    this.scale = 1.0, // Default scale factor
+    this.scale = 1.0, // Overall scale factor
+    this.centerHexSizeMultiplier = 1.0, // Center hexagon size multiplier
+    this.outerHexSizeMultiplier = 1.25, // Outer hexagons size multiplier
+    this.distanceMultiplier =
+        0.95, // Controls distance between center and outer hexagons
+    this.buttonHeightRatio =
+        1.75, // Controls the height of button hexagons (height-to-width ratio)
+    this.marginMultiplier = 0.5, // Controls the margin around the entire widget
+    this.baseFontSize = 24.0,
     super.key,
   });
 
   final ControlBoard controlBoard;
   final double scale;
+  final double centerHexSizeMultiplier;
+  final double outerHexSizeMultiplier;
+  final double distanceMultiplier;
+  final double buttonHeightRatio;
+  final double marginMultiplier;
+  final double baseFontSize;
 
   @override
   State<HexagonStack> createState() => _HexagonStackState();
@@ -21,96 +36,99 @@ class HexagonStack extends StatefulWidget {
 class _HexagonStackState extends State<HexagonStack> {
   @override
   Widget build(BuildContext context) {
-    // Scaled dimensions.
-    final double centerHexRadius = 200.0 * widget.scale;
-    final double outerHexRadius = 50.0 * widget.scale;
-    final double hexHeight = outerHexRadius * 1.75;
+    final double centerHexRadius =
+        200.0 * widget.scale * widget.centerHexSizeMultiplier;
+    final double outerHexRadius =
+        50.0 * widget.scale * widget.outerHexSizeMultiplier;
+    final double hexHeight = outerHexRadius * widget.buttonHeightRatio;
 
-    // Spacing constants.
-    final double distanceFromCenter = centerHexRadius + outerHexRadius * .25;
-    final double edgeAdjustment = outerHexRadius * 0.5; // adjustment along the radial direction
-    // Effective distance for placing outer hexagon centers.
+    final double baseDistance = centerHexRadius + outerHexRadius * 0.25;
+    final double distanceFromCenter = baseDistance * widget.distanceMultiplier;
+    final double edgeAdjustment = outerHexRadius * 0.5;
     final double effectiveDistance = distanceFromCenter + edgeAdjustment;
-    final double margin = outerHexRadius * 0.5;
 
-    // Define the angles for the 12 outer hexagons.
-    // We start at 135° so that the first (i.e. 'A') appears in the bottom left, then go counterclockwise.
+    final double margin = outerHexRadius * widget.marginMultiplier;
+
     final double initialAngle = 135 * pi / 180;
 
-    // Compute global bounds. We'll consider both the outer hexagon bounding boxes and the center hexagon.
-    double globalMinX = -centerHexRadius;
-    double globalMaxX = centerHexRadius;
-    double globalMinY = -centerHexRadius;
-    double globalMaxY = centerHexRadius;
-
-    // List to hold computed centers for outer hexagons.
     List<Offset> outerCenters = [];
     for (int i = 0; i < 12; i++) {
       double angle = initialAngle + i * (2 * pi / 12);
-      // The effective center for this outer hexagon.
       double cx = effectiveDistance * cos(angle);
       double cy = effectiveDistance * sin(angle);
       outerCenters.add(Offset(cx, cy));
-      // Its bounding box (we assume the widget's drawn size is 2*outerHexRadius wide and hexHeight tall).
-      double left = cx - outerHexRadius;
-      double right = cx + outerHexRadius;
-      double top = cy - hexHeight / 2;
-      double bottom = cy + hexHeight / 2;
-      if (left < globalMinX) globalMinX = left;
-      if (right > globalMaxX) globalMaxX = right;
-      if (top < globalMinY) globalMinY = top;
-      if (bottom > globalMaxY) globalMaxY = bottom;
     }
 
-    // Add extra margin.
+    double globalMinX = double.infinity;
+    double globalMaxX = double.negativeInfinity;
+    double globalMinY = double.infinity;
+    double globalMaxY = double.negativeInfinity;
+
+    globalMinX = min(globalMinX, -centerHexRadius);
+    globalMaxX = max(globalMaxX, centerHexRadius);
+    globalMinY = min(globalMinY, -centerHexRadius);
+    globalMaxY = max(globalMaxY, centerHexRadius);
+
+    for (final Offset center in outerCenters) {
+      double left = center.dx - outerHexRadius;
+      double right = center.dx + outerHexRadius;
+      double top = center.dy - hexHeight / 2;
+      double bottom = center.dy + hexHeight / 2;
+
+      globalMinX = min(globalMinX, left);
+      globalMaxX = max(globalMaxX, right);
+      globalMinY = min(globalMinY, top);
+      globalMaxY = max(globalMaxY, bottom);
+    }
+
     globalMinX -= margin;
     globalMaxX += margin;
     globalMinY -= margin;
     globalMaxY += margin;
 
-    // Overall canvas dimensions.
     final double overallWidth = globalMaxX - globalMinX;
     final double overallHeight = globalMaxY - globalMinY;
-    // Offset to shift everything so that globalMin becomes (0,0).
-    final Offset offsetOrigin = Offset(-globalMinX, -globalMinY);
+
+    final Offset centerPoint = Offset(
+      -globalMinX,
+      -globalMinY,
+    );
+
+    final double scaledFontSize =
+        widget.baseFontSize * widget.scale * widget.outerHexSizeMultiplier;
 
     return SizedBox(
       width: overallWidth,
       height: overallHeight,
       child: Stack(
         children: [
-          // Center hexagon placed at the computed center of the canvas.
           Positioned(
-            left: offsetOrigin.dx,
-            top: offsetOrigin.dy,
-            child: Transform.translate(
-              offset: Offset(-centerHexRadius, -centerHexRadius),
-              child: CustomPaint(
-                painter: LargeHexagonPainter(
-                  color: Colors.grey[800]!,
-                  borderColor: Colors.grey,
-                ),
-                child: SizedBox(
-                  width: centerHexRadius * 2,
-                  height: centerHexRadius * 2,
-                ),
+            left: centerPoint.dx - centerHexRadius,
+            top: centerPoint.dy - centerHexRadius,
+            child: CustomPaint(
+              painter: LargeHexagonPainter(
+                color: ControlBoardColors.cardBackground,
+                borderColor: ControlBoardColors.border,
+              ),
+              child: SizedBox(
+                width: centerHexRadius * 2,
+                height: centerHexRadius * 2,
               ),
             ),
           ),
-          // Outer hexagon buttons.
           for (int i = 0; i < outerCenters.length; i++)
             Positioned(
-              left: offsetOrigin.dx + outerCenters[i].dx,
-              top: offsetOrigin.dy + outerCenters[i].dy,
-              child: Transform.translate(
-                offset: Offset(-outerHexRadius, -hexHeight / 2),
-                child: HexagonButton(
-                  name: ValueLists.reefLocations[i],
-                  setFunction: () =>
-                      widget.controlBoard.setReefLocation(ValueLists.reefLocations[i]),
-                  setVal: ValueLists.reefLocations[i],
-                  locationListenable: widget.controlBoard.reefLocation(),
-                ),
+              left: centerPoint.dx + outerCenters[i].dx - outerHexRadius,
+              top: centerPoint.dy + outerCenters[i].dy - hexHeight / 2,
+              child: HexagonStatusButton(
+                height: hexHeight,
+                width: outerHexRadius * 2,
+                fontSize: scaledFontSize,
+                name: ValueLists.reefLocations[i],
+                setFunction: () => widget.controlBoard
+                    .setReefLocation(ValueLists.reefLocations[i]),
+                setVal: ValueLists.reefLocations[i],
+                locationListenable: widget.controlBoard.reefLocation(),
               ),
             ),
         ],
@@ -119,7 +137,6 @@ class _HexagonStackState extends State<HexagonStack> {
   }
 }
 
-// The custom painter for the larger center hexagon remains unchanged.
 class LargeHexagonPainter extends CustomPainter {
   final Color color;
   final Color borderColor;

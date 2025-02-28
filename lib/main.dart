@@ -31,47 +31,46 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _ip = '127.0.0.1';
   String _teamNumber = '2064';
-  bool _isSimulation = true;
+  bool _isRobot = true;
 
   void _openSettings() async {
     final result = await showDialog<Map<String, dynamic>>(
-        context: context,
-        builder: (context) => const SettingsDialog(),
+      context: context,
+      builder: (context) => SettingsDialog(
+        isRobot: _isRobot,
+        teamNumber: _teamNumber,
+      ),
     );
 
     if (result != null) {
       setState(() {
         _ip = result['ip'];
         _teamNumber = result['teamNumber'];
-        _isSimulation = result['isSimulation'];
+        _isRobot = result['isRobot'];
       });
     }
-
   }
 
   @override
   void initState() {
     super.initState();
-      
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ControlBoardColors.background,
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: _openSettings,
-          ),
-        ],
-      ),
       body: MainLayout(
         controlBoard: ControlBoard(serverBaseAddress: _ip),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _openSettings,
+        backgroundColor: ControlBoardColors.cardBackground,
+        child: Icon(
+          Icons.settings,
+          color: ControlBoardColors.statusSelected,
+        ),
       ),
     );
   }
 }
-

@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import '../utils/control_board_colors.dart';
 
 class SettingsDialog extends StatefulWidget {
-  const SettingsDialog({super.key});
+  const SettingsDialog(
+      {required this.teamNumber, required this.isRobot, super.key});
+
+  final String teamNumber;
+  final bool isRobot;
 
   @override
   State<SettingsDialog> createState() => _SettingsDialogState();
@@ -24,11 +28,17 @@ class _SettingsDialogState extends State<SettingsDialog> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _teamNumberController.text = widget.teamNumber;
+    _isRobot = widget.isRobot;
+  }
+
+  @override
   void dispose() {
     _teamNumberController.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -51,76 +61,48 @@ class _SettingsDialogState extends State<SettingsDialog> {
             style: TextStyle(color: ControlBoardColors.buttonText),
             decoration: InputDecoration(
               labelText: "Team Number",
-              labelStyle:
-              TextStyle(color: ControlBoardColors.headerText),
-              hintText: "Enter 4-digit team number",
-              hintStyle: TextStyle(
-                  color: ControlBoardColors.buttonText),
+              labelStyle: TextStyle(color: ControlBoardColors.headerText),
+              hintStyle: TextStyle(color: ControlBoardColors.buttonText),
               border: OutlineInputBorder(
-                borderSide:
-                BorderSide(color: ControlBoardColors.headerText),
+                borderSide: BorderSide(color: ControlBoardColors.headerText),
               ),
             ),
             keyboardType: TextInputType.number,
             maxLength: 4,
           ),
           const SizedBox(height: 16),
-          // Lever-style toggle row.
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Simulation",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: ControlBoardColors.buttonText,
-                ),
-              ),
-              const SizedBox(width: 10),
-              LeverSwitch(
-                value: _isRobot,
-                onChanged: (value) {
-                  setState(() {
-                    _isRobot = value;
-                  });
-                },
-              ),
-              const SizedBox(width: 10),
-              Text(
-                "Robot",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: ControlBoardColors.buttonText,
-                ),
-              ),
-            ],
+          RadioToggleSwitch(
+            isRobot: _isRobot,
+            onChange: (value) {
+              setState(() {
+                _isRobot = value;
+              });
+            },
           ),
-          // Show computed robot IP when in Robot mode with a valid team number.
+          const SizedBox(height: 16),
           if (_isRobot && _teamNumberController.text.length == 4)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Text(
-                "Robot IP: $_robotIp",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: ControlBoardColors.buttonText,
-                ),
+            Text(
+              "Robot IP: $_robotIp",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: ControlBoardColors.buttonText,
               ),
+            )
+          else
+            const SizedBox(
+              height: 29,
             ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () {
-            // If in Robot mode, use the computed IP; otherwise use simulation IP.
             final ip = _isRobot ? _robotIp : "127.0.0.1";
             Navigator.of(context).pop({
               'ip': ip,
               'teamNumber': _teamNumberController.text,
-              'isSimulation': !_isRobot,
+              'isRobot': _isRobot,
             });
           },
           child: Text(
@@ -140,49 +122,90 @@ class _SettingsDialogState extends State<SettingsDialog> {
   }
 }
 
+class RadioToggleSwitch extends StatefulWidget {
+  final bool isRobot;
+  final ValueChanged<bool> onChange;
 
-class LeverSwitch extends StatelessWidget {
-  final bool value;
-  final ValueChanged<bool> onChanged;
-  const LeverSwitch({
+  const RadioToggleSwitch({
     super.key,
-    required this.value,
-    required this.onChanged,
+    required this.isRobot,
+    required this.onChange,
   });
 
   @override
+  State<RadioToggleSwitch> createState() => _RadioToggleSwitchState();
+}
+
+class _RadioToggleSwitchState extends State<RadioToggleSwitch> {
+  late bool _isRobot;
+
+  @override
+  void initState() {
+    super.initState();
+    _isRobot = widget.isRobot;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onChanged(!value),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: 80,
-        height: 40,
-        decoration: BoxDecoration(
-          color: value
-              ? ControlBoardColors.statusSelected
-              : ControlBoardColors.statusUnselected,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Stack(
-          children: [
-            AnimatedAlign(
-              alignment:
-              value ? Alignment.centerRight : Alignment.centerLeft,
-              duration: const Duration(milliseconds: 200),
-              child: Container(
-                margin: const EdgeInsets.all(4),
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: ControlBoardColors.buttonText,
-                  shape: BoxShape.circle,
-                ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          height: 35,
+          width: 100,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
               ),
-            ),
-          ],
+              border: Border.all(color: ControlBoardColors.border),
+              color: !_isRobot
+                  ? ControlBoardColors.statusSelected
+                  : ControlBoardColors.statusUnselected),
+          child: TextButton(
+              onPressed: () => setState(() {
+                    _isRobot = false;
+                    widget.onChange(false);
+                  }),
+              child: Text(
+                "Simulation",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: !_isRobot
+                        ? ControlBoardColors.background
+                        : ControlBoardColors.buttonText),
+              )),
         ),
-      ),
+        Container(
+          height: 35,
+          width: 100,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+              ),
+              border: Border.all(color: ControlBoardColors.border),
+              color: _isRobot
+                  ? ControlBoardColors.statusSelected
+                  : ControlBoardColors.statusUnselected),
+          child: TextButton(
+              onPressed: () => setState(() {
+                    _isRobot = true;
+                    widget.onChange(true);
+                  }),
+              child: Text(
+                "Robot",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: _isRobot
+                        ? ControlBoardColors.background
+                        : ControlBoardColors.buttonText),
+              )),
+        ),
+      ],
     );
   }
 }
