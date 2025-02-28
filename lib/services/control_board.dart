@@ -9,7 +9,7 @@ class ControlBoard {
   late NT4Subscription _hasAlgae;
   late NT4Subscription _hasScored;
   late NT4Subscription _clamped;
-  late NT4Subscription _selectedAuto;
+  late NT4Subscription _selectedAutoSub;
   late NT4Subscription _reefLocationSub;
   late NT4Subscription _reefLevelSub;
   late NT4Subscription _feederLocationSub;
@@ -21,6 +21,7 @@ class ControlBoard {
   late NT4Topic _cageLocation;
   late NT4Topic _feederLocation;
   late NT4Topic _scoreLocation;
+  late NT4Topic _selectedAuto;
 
   bool _isConnected = false;
 
@@ -37,7 +38,7 @@ class ControlBoard {
       _hasAlgae = _client.subscribePeriodic('/ControlBoard/Robot/HasAlgae', subscriberInterval);
       _hasScored = _client.subscribePeriodic('/ControlBoard/Robot/HasScored', subscriberInterval);
       _clamped = _client.subscribePeriodic('/ControlBoard/Robot/Clamped', subscriberInterval);
-      _selectedAuto = _client.subscribePeriodic('/ControlBoard/Robot/SelectedAuto', subscriberInterval);
+      _selectedAutoSub = _client.subscribePeriodic('/ControlBoard/Robot/SelectedAuto', subscriberInterval);
 
       _reefLocationSub = _client.subscribePeriodic('/ControlBoard/Robot/Reef/Location', subscriberInterval);
       _reefLevelSub = _client.subscribePeriodic('/ControlBoard/Robot/Reef/Level', subscriberInterval);
@@ -50,6 +51,7 @@ class ControlBoard {
       _cageLocation = _client.publishNewTopic('/ControlBoard/Barge/Cage', NT4TypeStr.typeStr);
       _feederLocation = _client.publishNewTopic('/ControlBoard/Feeder', NT4TypeStr.typeStr);
       _scoreLocation = _client.publishNewTopic('/ControlBoard/ScoreLocation', NT4TypeStr.typeStr);
+      _selectedAuto = _client.publishNewTopic('/ControlBoard/SelectedAuto', NT4TypeStr.typeStr);
   }
 
   void setServerAddress(String serverAddress) {
@@ -83,6 +85,10 @@ class ControlBoard {
   void setScoreLocation(String sl) {
     _client.addSample(_scoreLocation, sl);
   }
+
+  void setAuto(String a) {
+    _client.addSample(_selectedAuto, a);
+  }
   
   Stream<bool> hasClamped() {
     return _clamped.stream().map((clamped) => clamped as bool);
@@ -105,7 +111,7 @@ class ControlBoard {
   }
 
   Stream<String> selectedAuto() {
-    return _selectedAuto.stream().map((auto) => auto as String);
+    return _selectedAutoSub.stream().map((auto) => auto as String);
   }
 
   Stream<String> reefLocation() {

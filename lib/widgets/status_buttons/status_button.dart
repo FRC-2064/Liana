@@ -1,4 +1,4 @@
-import 'package:control_board/utils/controlboard_colors.dart';
+import 'package:control_board/utils/control_board_colors.dart';
 import 'package:flutter/material.dart';
 
 class StatusButton extends StatefulWidget {

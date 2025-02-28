@@ -40,5 +40,11 @@ class ValueLists {
       'PROCESSOR',
   ];
 
+  static List<String> autoList = [
+    'Left Start',
+    'Center Start',
+    'Right Start',
+    'Buddy Save'
+  ];
 
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/controlboard_colors.dart';
+import '../utils/control_board_colors.dart';
 
 class BoolIndicator extends StatefulWidget {
   const BoolIndicator(
@@ -17,11 +17,11 @@ class _BoolIndicatorState extends State<BoolIndicator> {
     return StreamBuilder(
       stream: widget.boolListenable,
       builder: (context, snapshot) => Padding(
-        padding: const EdgeInsets.all(8.0), // Padding around the Card
+        padding: const EdgeInsets.all(5.0),
         child: Card(
-          color: ControlBoardColors.cardBackground, // Set background color
+          color: ControlBoardColors.cardBackground,
           child: Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -34,19 +34,20 @@ class _BoolIndicatorState extends State<BoolIndicator> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 10), // Space between text and box
+                const SizedBox(height: 10),
                 Container(
-                  height: 50,
-                  width: 50,
+                  height: 75,
+                  width: 150,
                   decoration: BoxDecoration(
                     color: switch (snapshot.data) {
                       true => ControlBoardColors.boolTrue,
                       false => ControlBoardColors.boolFalse,
                       null => ControlBoardColors.missing,
                     },
-                    borderRadius: BorderRadius.circular(8), // Optional rounded edges
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
+                const SizedBox(height: 5),
               ],
             ),
           ),

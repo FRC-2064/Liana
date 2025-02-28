@@ -1,7 +1,7 @@
 import 'package:control_board/layout/2025_layout.dart';
-import 'package:control_board/layout/example_layout.dart';
-import 'package:control_board/layout/hex_stack_layout.dart';
-import 'package:control_board/utils/controlboard_colors.dart';
+import 'package:control_board/services/control_board.dart';
+import 'package:control_board/utils/control_board_colors.dart';
+import 'package:control_board/widgets/settings_dialog.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -29,6 +29,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String _ip = '127.0.0.1';
+  String _teamNumber = '2064';
+  bool _isSimulation = true;
+
+  void _openSettings() async {
+    final result = await showDialog<Map<String, dynamic>>(
+        context: context,
+        builder: (context) => const SettingsDialog(),
+    );
+
+    if (result != null) {
+      setState(() {
+        _ip = result['ip'];
+        _teamNumber = result['teamNumber'];
+        _isSimulation = result['isSimulation'];
+      });
+    }
+
+  }
 
   @override
   void initState() {
@@ -40,8 +59,17 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ControlBoardColors.background,
-      body: ExampleLayout(
-        serverAddress: '127.0.0.1',
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: _openSettings,
+          ),
+        ],
+      ),
+      body: MainLayout(
+        controlBoard: ControlBoard(serverBaseAddress: _ip),
       ),
     );
   }

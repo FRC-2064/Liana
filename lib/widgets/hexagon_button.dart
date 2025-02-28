@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../utils/controlboard_colors.dart';
+import '../utils/control_board_colors.dart';
 
 class HexagonButton extends StatefulWidget {
   const HexagonButton({
