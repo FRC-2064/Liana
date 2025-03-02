@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 class HexagonStack extends StatefulWidget {
   const HexagonStack({
     required this.controlBoard,
-    this.scale = 1.0, // Overall scale factor
-    this.centerHexSizeMultiplier = 1.0, // Center hexagon size multiplier
+    this.scale = 0.75, // Overall scale factor
+    this.centerHexSizeMultiplier = .25, // Center hexagon size multiplier
     this.outerHexSizeMultiplier = 1.25, // Outer hexagons size multiplier
     this.distanceMultiplier =
-        0.95, // Controls distance between center and outer hexagons
+        2.65, // Controls distance between center and outer hexagons
     this.buttonHeightRatio =
         1.75, // Controls the height of button hexagons (height-to-width ratio)
     this.marginMultiplier = 0.5, // Controls the margin around the entire widget

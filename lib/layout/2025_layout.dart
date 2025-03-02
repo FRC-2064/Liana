@@ -49,10 +49,6 @@ class _MainLayoutState extends State<MainLayout> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      BoolIndicator(
-                        name: 'Algae',
-                        boolListenable: widget.controlBoard.hasAlgae(),
-                      ),
                       const SizedBox(width: 2),
                       BoolIndicator(
                         name: 'Coral',
@@ -95,7 +91,7 @@ class _MainLayoutState extends State<MainLayout> {
                 ],
               ),
             ),
-
+            SizedBox(width: 10),
             // Column 2: Cage Settings (in a row), Hexagon, Feeders
             Expanded(
               child: Column(
@@ -133,7 +129,7 @@ class _MainLayoutState extends State<MainLayout> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   Text(
                     'Feeder',
                     style: TextStyle(
@@ -159,7 +155,7 @@ class _MainLayoutState extends State<MainLayout> {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 25),
                 ],
               ),
             ),
@@ -193,6 +189,28 @@ class _MainLayoutState extends State<MainLayout> {
                                     widget.controlBoard.setReefLevel(level),
                                 listenable: widget.controlBoard.reefLevel(),
                                 setVal: level)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                                    Text(
+                    'Score',
+                    style: TextStyle(
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
+                      color: ControlBoardColors.headerText,
+                    ),
+                  ),
+                                    Column(
+                    children: [
+                      for (String loc in ValueLists.scoreLocations)
+                        Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: LevelStatusButton(
+                                name: loc,
+                                setFunction: () =>
+                                    widget.controlBoard.setScoreLocation(loc),
+                                listenable: widget.controlBoard.scoreLocation(),
+                                setVal: loc)),
                     ],
                   ),
                 ],

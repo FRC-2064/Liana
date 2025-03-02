@@ -24,7 +24,7 @@ class _CageStatusButtonState extends State<CageStatusButton> {
           bool isSelected = snapshot.data == widget.setVal;
           return Container(
             height: 50,
-            width: 150,
+            width: 115,
             decoration: BoxDecoration(
               color: switch (snapshot.data) {
                 null => ControlBoardColors.background,

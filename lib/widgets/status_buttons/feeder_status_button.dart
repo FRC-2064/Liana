@@ -24,7 +24,7 @@ class _FeederStatusButtonState extends State<FeederStatusButton> {
           bool isSelected = snapshot.data == widget.setVal;
           return Container(
             height: 75,
-            width: 200,
+            width: 150,
             decoration: BoxDecoration(
               color: switch (snapshot.data) {
                 null => ControlBoardColors.background,

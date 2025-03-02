@@ -39,8 +39,8 @@ class _BoolIndicatorState extends State<BoolIndicator> {
                     ),
                     const SizedBox(height: 5),
                     Container(
-                      height: 100,
-                      width: 150,
+                      height: 75,
+                      width: 100,
                       decoration: BoxDecoration(
                         color: switch (snapshot.data) {
                           true => ControlBoardColors.boolTrue,

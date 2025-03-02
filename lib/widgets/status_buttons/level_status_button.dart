@@ -23,8 +23,8 @@ class _LevelStatusButtonState extends State<LevelStatusButton> {
         builder: (context, snapshot) {
           bool isSelected = snapshot.data == widget.setVal;
           return Container(
-              height: 100,
-              width: 200,
+              height: 75,
+              width: 150,
               decoration: BoxDecoration(
                 color: switch (snapshot.data) {
                   null => ControlBoardColors.background,
@@ -44,7 +44,7 @@ class _LevelStatusButtonState extends State<LevelStatusButton> {
               widget.name,
               style: TextStyle(
                 fontSize: isSelected
-                    ? 30
+                    ? 24
                     : 20,
                 fontWeight: FontWeight.bold,
                 color: switch (snapshot.data) {
