@@ -6,6 +6,7 @@ import 'package:control_board/widgets/selected_auto.dart';
 import 'package:control_board/widgets/status_buttons/cage_status_button.dart';
 import 'package:control_board/widgets/status_buttons/feeder_status_button.dart';
 import 'package:control_board/widgets/status_buttons/level_status_button.dart';
+import 'package:control_board/widgets/status_buttons/score_location_status_button.dart';
 import 'package:control_board/widgets/timer.dart';
 import 'package:flutter/material.dart';
 
@@ -13,8 +14,9 @@ import '../utils/control_board_colors.dart';
 
 class MainLayout extends StatefulWidget {
   final ControlBoard controlBoard;
+  final String gifBasePath;
 
-  const MainLayout({super.key, required this.controlBoard});
+  const MainLayout({super.key, required this.controlBoard, required this.gifBasePath});
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
@@ -22,11 +24,25 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   String? selectedAuto;
+  List<String> autoList = ValueLists.autoList;
+
 
   @override
   void initState() {
     super.initState();
-    selectedAuto = ValueLists.autoList.first;
+    selectedAuto = autoList.isNotEmpty ? autoList.first : 'Default Auto';
+
+    widget.controlBoard.autos().listen((autos) {
+      if (autos.isNotEmpty) {
+        setState(() {
+          autoList = autos;
+          if (!autoList.contains(selectedAuto)) {
+            selectedAuto = autoList.first;
+            widget.controlBoard.setAuto(selectedAuto!);
+          }
+        });
+      }
+    });
   }
 
   @override
@@ -63,31 +79,15 @@ class _MainLayoutState extends State<MainLayout> {
                   ),
                   const SizedBox(height: 16),
                   SelectedAuto(
-                      setFunction: (a) => widget.controlBoard.setAuto(a)),
-                  const SizedBox(height: 16),
-                  StreamBuilder(
-                      stream: widget.controlBoard.selectedAuto(),
-                      builder: (context, snapshot) {
-                        selectedAuto = snapshot.data;
-                        String assetString = switch (selectedAuto) {
-                          null => 'assets/gifs/default.gif',
-                          _ => 'assets/gifs/$selectedAuto.gif'
-                        };
-                        return Expanded(
-                          child: Center(
-                            child: Image.asset(
-                              assetString,
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  'assets/gifs/default.gif',
-                                  fit: BoxFit.contain,
-                                );
-                              },
-                            ),
-                          ),
-                        );
-                      }),
+                      setFunction: (a) {
+                        setState(() {
+                          selectedAuto = a;
+                        });
+                            widget.controlBoard.setAuto(a);
+                      },
+                      autoList: autoList.isNotEmpty ? autoList : ['Default Auto'],
+                    gifBasePath: widget.gifBasePath,
+                  ),
                 ],
               ),
             ),
@@ -205,7 +205,7 @@ class _MainLayoutState extends State<MainLayout> {
                       for (String loc in ValueLists.scoreLocations)
                         Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: LevelStatusButton(
+                            child: ScoreLocationStatusButton(
                                 name: loc,
                                 setFunction: () =>
                                     widget.controlBoard.setScoreLocation(loc),

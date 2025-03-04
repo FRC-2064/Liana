@@ -38,6 +38,7 @@ class ValueLists {
   static List<String> scoreLocations = [
       'REEF',
       'PROCESSOR',
+      'CAGE'
   ];
 
   static List<String> autoList = [

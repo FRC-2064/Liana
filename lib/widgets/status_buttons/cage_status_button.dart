@@ -43,9 +43,7 @@ class _CageStatusButtonState extends State<CageStatusButton> {
               child: Text(
                 widget.name,
                 style: TextStyle(
-                  fontSize: isSelected
-                      ? 30
-                      : 20,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                     color: switch (snapshot.data) {
                       null => ControlBoardColors.missing,

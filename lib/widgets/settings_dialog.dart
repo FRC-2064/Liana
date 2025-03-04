@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
-
+import 'package:file_picker/file_picker.dart';
 import '../utils/control_board_colors.dart';
 
 class SettingsDialog extends StatefulWidget {
-  const SettingsDialog(
-      {required this.teamNumber, required this.isRobot, super.key});
+  const SettingsDialog({
+    required this.teamNumber,
+    required this.isRobot,
+    required this.gifBasePath,
+    super.key,
+  });
 
   final String teamNumber;
   final bool isRobot;
+  final String gifBasePath;
 
   @override
   State<SettingsDialog> createState() => _SettingsDialogState();
@@ -15,6 +20,7 @@ class SettingsDialog extends StatefulWidget {
 
 class _SettingsDialogState extends State<SettingsDialog> {
   final TextEditingController _teamNumberController = TextEditingController();
+  final TextEditingController _gifPathController = TextEditingController();
   bool _isRobot = false;
 
   String get _robotIp {
@@ -31,13 +37,25 @@ class _SettingsDialogState extends State<SettingsDialog> {
   void initState() {
     super.initState();
     _teamNumberController.text = widget.teamNumber;
+    _gifPathController.text = widget.gifBasePath;
     _isRobot = widget.isRobot;
   }
 
   @override
   void dispose() {
     _teamNumberController.dispose();
+    _gifPathController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickFolder() async {
+    // Opens a folder selection dialog.
+    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+    if (selectedDirectory != null) {
+      setState(() {
+        _gifPathController.text = selectedDirectory;
+      });
+    }
   }
 
   @override
@@ -52,48 +70,66 @@ class _SettingsDialogState extends State<SettingsDialog> {
           color: ControlBoardColors.headerText,
         ),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          TextField(
-            controller: _teamNumberController,
-            style: TextStyle(color: ControlBoardColors.buttonText),
-            decoration: InputDecoration(
-              labelText: "Team Number",
-              labelStyle: TextStyle(color: ControlBoardColors.headerText),
-              hintStyle: TextStyle(color: ControlBoardColors.buttonText),
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: ControlBoardColors.headerText),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _teamNumberController,
+              style: TextStyle(color: ControlBoardColors.buttonText),
+              decoration: InputDecoration(
+                labelText: "Team Number",
+                labelStyle: TextStyle(color: ControlBoardColors.headerText),
+                hintStyle: TextStyle(color: ControlBoardColors.buttonText),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: ControlBoardColors.headerText),
+                ),
+              ),
+              keyboardType: TextInputType.number,
+              maxLength: 4,
+            ),
+            const SizedBox(height: 16),
+            RadioToggleSwitch(
+              isRobot: _isRobot,
+              onChange: (value) {
+                setState(() {
+                  _isRobot = value;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            if (_isRobot && _teamNumberController.text.length == 4)
+              Text(
+                "Robot IP: $_robotIp",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: ControlBoardColors.buttonText,
+                ),
+              )
+            else
+              const SizedBox(height: 29),
+            const SizedBox(height: 16),
+            // Updated GIF path TextField with a folder icon
+            TextField(
+              controller: _gifPathController,
+              style: TextStyle(color: ControlBoardColors.buttonText),
+              decoration: InputDecoration(
+                labelText: "GIF Path",
+                labelStyle: TextStyle(color: ControlBoardColors.headerText),
+                hintStyle: TextStyle(color: ControlBoardColors.buttonText),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: ControlBoardColors.headerText),
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.folder, color: ControlBoardColors.buttonText),
+                  onPressed: _pickFolder,
+                ),
               ),
             ),
-            keyboardType: TextInputType.number,
-            maxLength: 4,
-          ),
-          const SizedBox(height: 16),
-          RadioToggleSwitch(
-            isRobot: _isRobot,
-            onChange: (value) {
-              setState(() {
-                _isRobot = value;
-              });
-            },
-          ),
-          const SizedBox(height: 16),
-          if (_isRobot && _teamNumberController.text.length == 4)
-            Text(
-              "Robot IP: $_robotIp",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: ControlBoardColors.buttonText,
-              ),
-            )
-          else
-            const SizedBox(
-              height: 29,
-            ),
-        ],
+          ],
+        ),
       ),
       actions: [
         TextButton(
@@ -103,6 +139,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
               'ip': ip,
               'teamNumber': _teamNumberController.text,
               'isRobot': _isRobot,
+              'gifPath': _gifPathController.text,
             });
           },
           child: Text(
@@ -156,7 +193,7 @@ class _RadioToggleSwitchState extends State<RadioToggleSwitch> {
           width: 100,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10),
                 bottomLeft: Radius.circular(10),
               ),
@@ -165,25 +202,27 @@ class _RadioToggleSwitchState extends State<RadioToggleSwitch> {
                   ? ControlBoardColors.statusSelected
                   : ControlBoardColors.statusUnselected),
           child: TextButton(
-              onPressed: () => setState(() {
-                    _isRobot = false;
-                    widget.onChange(false);
-                  }),
-              child: Text(
-                "Simulation",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: !_isRobot
-                        ? ControlBoardColors.background
-                        : ControlBoardColors.buttonText),
-              )),
+            onPressed: () => setState(() {
+              _isRobot = false;
+              widget.onChange(false);
+            }),
+            child: Text(
+              "Simulation",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: !_isRobot
+                    ? ControlBoardColors.background
+                    : ControlBoardColors.buttonText,
+              ),
+            ),
+          ),
         ),
         Container(
           height: 35,
           width: 100,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topRight: Radius.circular(10),
                 bottomRight: Radius.circular(10),
               ),
@@ -192,18 +231,20 @@ class _RadioToggleSwitchState extends State<RadioToggleSwitch> {
                   ? ControlBoardColors.statusSelected
                   : ControlBoardColors.statusUnselected),
           child: TextButton(
-              onPressed: () => setState(() {
-                    _isRobot = true;
-                    widget.onChange(true);
-                  }),
-              child: Text(
-                "Robot",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: _isRobot
-                        ? ControlBoardColors.background
-                        : ControlBoardColors.buttonText),
-              )),
+            onPressed: () => setState(() {
+              _isRobot = true;
+              widget.onChange(true);
+            }),
+            child: Text(
+              "Robot",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: _isRobot
+                    ? ControlBoardColors.background
+                    : ControlBoardColors.buttonText,
+              ),
+            ),
+          ),
         ),
       ],
     );

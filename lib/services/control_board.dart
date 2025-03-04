@@ -23,6 +23,8 @@ class ControlBoard {
   late NT4Topic _scoreLocation;
   late NT4Topic _selectedAuto;
 
+  late NT4Subscription _autosSub;
+
   bool _isConnected = false;
 
   static const subscriberInterval = 0.033;
@@ -39,6 +41,7 @@ class ControlBoard {
       _hasScored = _client.subscribePeriodic('/ControlBoard/Robot/HasScored', subscriberInterval);
       _clamped = _client.subscribePeriodic('/ControlBoard/Robot/Clamped', subscriberInterval);
       _selectedAutoSub = _client.subscribePeriodic('/ControlBoard/Robot/SelectedAuto', subscriberInterval);
+      _autosSub = _client.subscribePeriodic('/ControlBoard/Robot/Autos', subscriberInterval);
 
       _reefLocationSub = _client.subscribePeriodic('/ControlBoard/Robot/Reef/Location', subscriberInterval);
       _reefLevelSub = _client.subscribePeriodic('/ControlBoard/Robot/Reef/Level', subscriberInterval);
@@ -57,6 +60,16 @@ class ControlBoard {
   void setServerAddress(String serverAddress) {
     _client.setServerBaseAddress(serverAddress);
   }
+
+  Stream<List<String>> autos() {
+    return _autosSub.stream().map((data) {
+      if (data is List) {
+        return data.map((auto) => auto.toString()).toList();
+      }
+      return <String>[];
+    });
+  }
+
 
   NT4Client getClient() {
     return _client;
@@ -89,7 +102,7 @@ class ControlBoard {
   void setAuto(String a) {
     _client.addSample(_selectedAuto, a);
   }
-  
+
   Stream<bool> hasClamped() {
     return _clamped.stream().map((clamped) => clamped as bool);
   } 

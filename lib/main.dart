@@ -31,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _ip = '127.0.0.1';
   String _teamNumber = '2064';
+  String _baseGifPath = 'assets/gifs';
   bool _isRobot = true;
 
   void _openSettings() async {
@@ -39,6 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context) => SettingsDialog(
         isRobot: _isRobot,
         teamNumber: _teamNumber,
+        gifBasePath: _baseGifPath,
       ),
     );
 
@@ -47,6 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _ip = result['ip'];
         _teamNumber = result['teamNumber'];
         _isRobot = result['isRobot'];
+        _baseGifPath = result['gifPath'];
       });
     }
   }
@@ -62,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: ControlBoardColors.background,
       body: MainLayout(
         controlBoard: ControlBoard(serverBaseAddress: _ip),
+        gifBasePath: _baseGifPath,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openSettings,

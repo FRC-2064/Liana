@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 
 import '../../utils/control_board_colors.dart';
 
-class LevelStatusButton extends StatusButton {
-  const LevelStatusButton(
+class ScoreLocationStatusButton extends StatusButton {
+  const ScoreLocationStatusButton(
       {super.key,
-      required super.name,
-      required super.setFunction,
-      required super.listenable,
-      required super.setVal});
+        required super.name,
+        required super.setFunction,
+        required super.listenable,
+        required super.setVal});
 
   @override
-  State<LevelStatusButton> createState() => _LevelStatusButtonState();
+  State<ScoreLocationStatusButton> createState() => _ScoreLocationStatusButtonState();
 }
 
-class _LevelStatusButtonState extends State<LevelStatusButton> {
+class _ScoreLocationStatusButtonState extends State<ScoreLocationStatusButton> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -23,9 +23,9 @@ class _LevelStatusButtonState extends State<LevelStatusButton> {
         builder: (context, snapshot) {
           bool isSelected = snapshot.data == widget.setVal;
           return Container(
-              height: 75,
-              width: 150,
-              decoration: BoxDecoration(
+            height: 75,
+            width: 150,
+            decoration: BoxDecoration(
                 color: switch (snapshot.data) {
                   null => ControlBoardColors.background,
                   _ => isSelected
@@ -37,23 +37,23 @@ class _LevelStatusButtonState extends State<LevelStatusButton> {
                   width: 4,
                   color: ControlBoardColors.border,
                 )
-              ),
-              child: TextButton(
+            ),
+            child: TextButton(
               onPressed: widget.setFunction,
               child: Text(
-              widget.name,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: switch (snapshot.data) {
-                  null => ControlBoardColors.missing,
-                  _ => isSelected
-                      ? ControlBoardColors.background
-                      : ControlBoardColors.buttonText,
-                },
+                widget.name,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: switch (snapshot.data) {
+                    null => ControlBoardColors.missing,
+                    _ => isSelected
+                        ? ControlBoardColors.background
+                        : ControlBoardColors.buttonText,
+                  },
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
             ),
           );
         });

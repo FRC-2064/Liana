@@ -67,7 +67,9 @@ class _HexagonStatusButtonState extends State<HexagonStatusButton> {
                         style: TextStyle(
                           fontSize: widget.fontSize,
                           fontWeight: FontWeight.bold,
-                          color: ControlBoardColors.buttonText,
+                          color: isSelected
+                              ? ControlBoardColors.background
+                              : ControlBoardColors.buttonText,
                         ),
                         textAlign: TextAlign.center,
                       ),
