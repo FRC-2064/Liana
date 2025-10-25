@@ -1,13 +1,13 @@
 import 'dart:math';
-import 'package:control_board/services/control_board.dart';
+import 'package:control_board/widgets/button_builders/hexagon_builder.dart';
+import 'package:flutter/material.dart';
+import 'package:control_board/widgets/nt_status_button.dart';
+
 import 'package:control_board/utils/control_board_colors.dart';
 import 'package:control_board/utils/value_lists.dart';
-import 'package:control_board/widgets/status_buttons/hexagon_status_button.dart';
-import 'package:flutter/material.dart';
 
 class HexagonStack extends StatefulWidget {
   const HexagonStack({
-    required this.controlBoard,
     this.scale = 0.75, // Overall scale factor
     this.centerHexSizeMultiplier = 1.0, // Center hexagon size multiplier
     this.outerHexSizeMultiplier = 1.25, // Outer hexagons size multiplier
@@ -20,7 +20,8 @@ class HexagonStack extends StatefulWidget {
     super.key,
   });
 
-  final ControlBoard controlBoard;
+  // Notice: 'Liana controlBoard' parameter is removed.
+
   final double scale;
   final double centerHexSizeMultiplier;
   final double outerHexSizeMultiplier;
@@ -120,15 +121,15 @@ class _HexagonStackState extends State<HexagonStack> {
             Positioned(
               left: centerPoint.dx + outerCenters[i].dx - outerHexRadius,
               top: centerPoint.dy + outerCenters[i].dy - hexHeight / 2,
-              child: HexagonStatusButton(
-                height: hexHeight,
+              child: NtStatusButton<String>(
+                topicName: "Reef/Location",
+                defaultValue: ValueLists.reefLocations.first,
+                valueToSet: ValueLists.reefLocations[i],
+                text: ValueLists.reefLocations[i],
                 width: outerHexRadius * 2,
+                height: hexHeight,
                 fontSize: scaledFontSize,
-                name: ValueLists.reefLocations[i],
-                setFunction: () => widget.controlBoard
-                    .setReefLocation(ValueLists.reefLocations[i]),
-                setVal: ValueLists.reefLocations[i],
-                locationListenable: widget.controlBoard.reefLocation(),
+                builder: const HexagonBuilder(),
               ),
             ),
         ],

@@ -1,8 +1,10 @@
 import 'package:control_board/layout/2025_layout.dart';
-import 'package:control_board/services/control_board.dart';
+import 'package:control_board/layout/2026_layout.dart';
+import 'package:control_board/services/liana.dart';
 import 'package:control_board/utils/control_board_colors.dart';
 import 'package:control_board/widgets/settings_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,8 +16,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Control Board',
-      home: const MyHomePage(title: 'Control Board'),
+      title: 'Liana',
+      home: const MyHomePage(title: 'Liana'),
     );
   }
 }
@@ -34,6 +36,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String _baseGifPath = 'assets/gifs';
   bool _isRobot = true;
 
+  late final Liana _liana;
+
   void _openSettings() async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
@@ -51,28 +55,30 @@ class _MyHomePageState extends State<MyHomePage> {
         _isRobot = result['isRobot'];
         _baseGifPath = result['gifPath'];
       });
+      _liana.getClient().setServerBaseAddress(_ip);
     }
   }
 
   @override
   void initState() {
     super.initState();
+    _liana = Liana(serverBaseAddress: _ip);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ControlBoardColors.background,
-      body: MainLayout(
-        controlBoard: ControlBoard(serverBaseAddress: _ip),
-        gifBasePath: _baseGifPath,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openSettings,
-        backgroundColor: ControlBoardColors.cardBackground,
-        child: Icon(
-          Icons.settings,
-          color: ControlBoardColors.statusSelected,
+    return Provider<Liana>(
+      create: (_) => _liana,
+      child: Scaffold(
+        backgroundColor: ControlBoardColors.background,
+        body: MainLayout(gifBasePath: _baseGifPath),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _openSettings,
+          backgroundColor: ControlBoardColors.cardBackground,
+          child: Icon(
+            Icons.settings,
+            color: ControlBoardColors.statusSelected,
+          ),
         ),
       ),
     );

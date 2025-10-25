@@ -1,5 +1,4 @@
 import 'package:control_board/utils/control_board_colors.dart';
-import 'package:control_board/utils/value_lists.dart';
 import 'package:flutter/material.dart';
 
 class SelectedAuto extends StatefulWidget {
@@ -7,44 +6,32 @@ class SelectedAuto extends StatefulWidget {
     required this.setFunction,
     required this.autoList,
     required this.gifBasePath,
+    required this.selectedAuto,
     super.key,
   });
 
   final void Function(String) setFunction;
   final List<String> autoList;
   final String gifBasePath;
+  final String? selectedAuto;
 
   @override
   State<SelectedAuto> createState() => _SelectedAutoState();
 }
 
 class _SelectedAutoState extends State<SelectedAuto> {
-  late String _selectedAuto;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedAuto = widget.autoList.first;
-  }
-
-  @override
-  void didUpdateWidget(covariant SelectedAuto oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!widget.autoList.contains(_selectedAuto)) {
-      setState(() {
-        _selectedAuto = widget.autoList.first;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Column with dropdown and GIF viewer integrated
+    final String? currentValue = widget.selectedAuto != null &&
+            widget.autoList.contains(widget.selectedAuto)
+        ? widget.selectedAuto
+        : (widget.autoList.isNotEmpty ? widget.autoList.first : null);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         DropdownButton<String>(
-          value: _selectedAuto,
+          value: currentValue,
           dropdownColor: ControlBoardColors.cardBackground,
           style: TextStyle(
             fontSize: 20,
@@ -53,25 +40,22 @@ class _SelectedAutoState extends State<SelectedAuto> {
           ),
           items: widget.autoList
               .map((auto) => DropdownMenuItem(
-            value: auto,
-            child: Text(auto),
-          ))
+                    value: auto,
+                    child: Text(auto),
+                  ))
               .toList(),
           onChanged: (value) {
             if (value != null) {
-              setState(() {
-                _selectedAuto = value;
-              });
               widget.setFunction(value);
             }
           },
         ),
         const SizedBox(height: 16),
-        // GIF Viewer based on the selected auto
         Image.asset(
-          '${widget.gifBasePath}/$_selectedAuto.gif',
+          '${widget.gifBasePath}/${currentValue ?? 'default'}.gif',
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
+            // Fallback GIF
             return Image.asset(
               '${widget.gifBasePath}/default.gif',
               fit: BoxFit.contain,

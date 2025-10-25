@@ -1,7 +1,6 @@
-
 import 'package:nt4/nt4.dart';
 
-class ControlBoard {
+class ControlBoardArchive {
   late NT4Client _client;
 
   late NT4Subscription _clock;
@@ -29,32 +28,50 @@ class ControlBoard {
 
   static const subscriberInterval = 0.033;
 
-  ControlBoard({required String serverBaseAddress}) {
+  ControlBoardArchive({required String serverBaseAddress}) {
     _client = NT4Client(
-      serverBaseAddress: serverBaseAddress,
-      onConnect: () => _isConnected = true,
-      onDisconnect: () => _isConnected = false);
+        serverBaseAddress: serverBaseAddress,
+        onConnect: () => _isConnected = true,
+        onDisconnect: () => _isConnected = false);
 
-      _clock = _client.subscribePeriodic('/ControlBoard/Robot/GameTime', subscriberInterval);
-      _hasCoral = _client.subscribePeriodic('/ControlBoard/Robot/HasCoral', subscriberInterval);
-      _hasAlgae = _client.subscribePeriodic('/ControlBoard/Robot/HasAlgae', subscriberInterval);
-      _hasScored = _client.subscribePeriodic('/ControlBoard/Robot/HasScored', subscriberInterval);
-      _clamped = _client.subscribePeriodic('/ControlBoard/Robot/Clamped', subscriberInterval);
-      _selectedAutoSub = _client.subscribePeriodic('/ControlBoard/Robot/SelectedAuto', subscriberInterval);
-      _autosSub = _client.subscribePeriodic('/ControlBoard/Robot/Autos', subscriberInterval);
+    _clock = _client.subscribePeriodic(
+        '/ControlBoard/Robot/GameTime', subscriberInterval);
+    _hasCoral = _client.subscribePeriodic(
+        '/ControlBoard/Robot/HasCoral', subscriberInterval);
+    _hasAlgae = _client.subscribePeriodic(
+        '/ControlBoard/Robot/HasAlgae', subscriberInterval);
+    _hasScored = _client.subscribePeriodic(
+        '/ControlBoard/Robot/HasScored', subscriberInterval);
+    _clamped = _client.subscribePeriodic(
+        '/ControlBoard/Robot/Clamped', subscriberInterval);
+    _selectedAutoSub = _client.subscribePeriodic(
+        '/ControlBoard/Robot/SelectedAuto', subscriberInterval);
+    _autosSub = _client.subscribePeriodic(
+        '/ControlBoard/Robot/Autos', subscriberInterval);
 
-      _reefLocationSub = _client.subscribePeriodic('/ControlBoard/Robot/Reef/Location', subscriberInterval);
-      _reefLevelSub = _client.subscribePeriodic('/ControlBoard/Robot/Reef/Level', subscriberInterval);
-      _feederLocationSub = _client.subscribePeriodic('/ControlBoard/Robot/Feeder', subscriberInterval);
-      _cageLocationSub = _client.subscribePeriodic('/ControlBoard/Robot/Barge/Cage', subscriberInterval);
-      _scoreLocationSub = _client.subscribePeriodic('/ControlBoard/Robot/ScoreLocation', subscriberInterval);
+    _reefLocationSub = _client.subscribePeriodic(
+        '/ControlBoard/Robot/Reef/Location', subscriberInterval);
+    _reefLevelSub = _client.subscribePeriodic(
+        '/ControlBoard/Robot/Reef/Level', subscriberInterval);
+    _feederLocationSub = _client.subscribePeriodic(
+        '/ControlBoard/Robot/Feeder', subscriberInterval);
+    _cageLocationSub = _client.subscribePeriodic(
+        '/ControlBoard/Robot/Barge/Cage', subscriberInterval);
+    _scoreLocationSub = _client.subscribePeriodic(
+        '/ControlBoard/Robot/ScoreLocation', subscriberInterval);
 
-      _reefLocation = _client.publishNewTopic('/ControlBoard/Reef/Location', NT4TypeStr.typeStr);
-      _reefLevel = _client.publishNewTopic('/ControlBoard/Reef/Level', NT4TypeStr.typeInt);
-      _cageLocation = _client.publishNewTopic('/ControlBoard/Barge/Cage', NT4TypeStr.typeStr);
-      _feederLocation = _client.publishNewTopic('/ControlBoard/Feeder', NT4TypeStr.typeStr);
-      _scoreLocation = _client.publishNewTopic('/ControlBoard/ScoreLocation', NT4TypeStr.typeStr);
-      _selectedAuto = _client.publishNewTopic('/ControlBoard/SelectedAuto', NT4TypeStr.typeStr);
+    _reefLocation = _client.publishNewTopic(
+        '/ControlBoard/Reef/Location', NT4TypeStr.typeStr);
+    _reefLevel =
+        _client.publishNewTopic('/ControlBoard/Reef/Level', NT4TypeStr.typeInt);
+    _cageLocation =
+        _client.publishNewTopic('/ControlBoard/Barge/Cage', NT4TypeStr.typeStr);
+    _feederLocation =
+        _client.publishNewTopic('/ControlBoard/Feeder', NT4TypeStr.typeStr);
+    _scoreLocation = _client.publishNewTopic(
+        '/ControlBoard/ScoreLocation', NT4TypeStr.typeStr);
+    _selectedAuto = _client.publishNewTopic(
+        '/ControlBoard/SelectedAuto', NT4TypeStr.typeStr);
   }
 
   void setServerAddress(String serverAddress) {
@@ -69,7 +86,6 @@ class ControlBoard {
       return <String>[];
     });
   }
-
 
   NT4Client getClient() {
     return _client;
@@ -105,17 +121,17 @@ class ControlBoard {
 
   Stream<bool> hasClamped() {
     return _clamped.stream().map((clamped) => clamped as bool);
-  } 
-  
+  }
+
   Stream<bool> hasAlgae() {
     return _hasAlgae.stream().map((clamped) => clamped as bool);
-  } 
+  }
 
-    Stream<bool> hasCoral() {
+  Stream<bool> hasCoral() {
     return _hasCoral.stream().map((clamped) => clamped as bool);
-  } 
+  }
 
-    Stream<bool> hasScored() {
+  Stream<bool> hasScored() {
     return _hasScored.stream().map((clamped) => clamped as bool);
   }
 
@@ -152,5 +168,4 @@ class ControlBoard {
   }
 
   bool get isConnected => _isConnected;
-
 }

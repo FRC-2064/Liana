@@ -1,48 +1,77 @@
-import 'package:control_board/services/control_board.dart';
+import 'dart:async';
+import 'package:control_board/widgets/button_builders/rectangle_builder.dart';
+import 'package:control_board/widgets/nt_bool_indicator.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:control_board/widgets/nt_status_button.dart';
+import 'package:control_board/services/liana.dart';
+import 'package:control_board/services/nt_entry.dart';
 import 'package:control_board/utils/value_lists.dart';
-import 'package:control_board/widgets/bool_indicator.dart';
+import 'package:control_board/utils/control_board_colors.dart';
 import 'package:control_board/widgets/hexagon_stack.dart';
 import 'package:control_board/widgets/selected_auto.dart';
-import 'package:control_board/widgets/status_buttons/cage_status_button.dart';
-import 'package:control_board/widgets/status_buttons/feeder_status_button.dart';
-import 'package:control_board/widgets/status_buttons/level_status_button.dart';
-import 'package:control_board/widgets/status_buttons/score_location_status_button.dart';
 import 'package:control_board/widgets/timer.dart';
-import 'package:flutter/material.dart';
-
-import '../utils/control_board_colors.dart';
 
 class MainLayout extends StatefulWidget {
-  final ControlBoard controlBoard;
   final String gifBasePath;
-
-  const MainLayout({super.key, required this.controlBoard, required this.gifBasePath});
+  const MainLayout({super.key, required this.gifBasePath});
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
 }
 
 class _MainLayoutState extends State<MainLayout> {
+  late final Liana _liana;
+  late final NtEntry<List<String>> _autosEntry;
+  late final NtEntry<String> _selectedAutoEntry;
+
   String? selectedAuto;
   List<String> autoList = ValueLists.autoList;
 
+  StreamSubscription? _autosSubscription;
+  StreamSubscription? _selectedAutoSubscription;
 
   @override
   void initState() {
     super.initState();
-    selectedAuto = autoList.isNotEmpty ? autoList.first : 'Default Auto';
+    _liana = Provider.of<Liana>(context, listen: false);
 
-    widget.controlBoard.autos().listen((autos) {
+    _autosEntry = _liana.getEntry<List<String>>('/Robot/Autos',
+        defaultValue: ValueLists.autoList);
+
+    autoList = _autosEntry.value ?? ValueLists.autoList;
+    _selectedAutoEntry = _liana.getEntry<String>(
+      'SelectedAuto',
+      defaultValue: autoList.isNotEmpty ? autoList.first : 'Default Auto',
+    );
+    selectedAuto = _selectedAutoEntry.value;
+
+    _autosSubscription = _autosEntry.stream().listen((autos) {
       if (autos.isNotEmpty) {
         setState(() {
           autoList = autos;
           if (!autoList.contains(selectedAuto)) {
             selectedAuto = autoList.first;
-            widget.controlBoard.setAuto(selectedAuto!);
+            _selectedAutoEntry.set(selectedAuto!);
           }
         });
       }
     });
+
+    _selectedAutoSubscription = _selectedAutoEntry.stream().listen((newAuto) {
+      if (newAuto != selectedAuto) {
+        setState(() {
+          selectedAuto = newAuto;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _autosSubscription?.cancel();
+    _selectedAutoSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -54,45 +83,46 @@ class _MainLayoutState extends State<MainLayout> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Column 1: Timer, Bool Indicators, Dropdown & GIF Player
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Timer(timeListenable: widget.controlBoard.clock()),
+                  NtTimer(
+                    topicName: '/Robot/GameTime',
+                    defaultValue: '135',
+                  ),
                   const SizedBox(height: 16),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(width: 2),
-                      BoolIndicator(
+                      NtBoolIndicator(
                         name: 'Coral',
-                        boolListenable: widget.controlBoard.hasCoral(),
+                        topicName: '/Robot/HasCoral',
+                        defaultValue: false,
                       ),
                       const SizedBox(width: 2),
-                      BoolIndicator(
+                      NtBoolIndicator(
                         name: 'Clamped',
-                        boolListenable: widget.controlBoard.hasClamped(),
+                        topicName: '/Robot/Clamped',
+                        defaultValue: false,
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
                   SelectedAuto(
-                      setFunction: (a) {
-                        setState(() {
-                          selectedAuto = a;
-                        });
-                            widget.controlBoard.setAuto(a);
-                      },
-                      autoList: autoList.isNotEmpty ? autoList : ['Default Auto'],
+                    selectedAuto: selectedAuto,
+                    setFunction: (a) {
+                      _selectedAutoEntry.set(a);
+                    },
+                    autoList: autoList.isNotEmpty ? autoList : ['Default Auto'],
                     gifBasePath: widget.gifBasePath,
                   ),
                 ],
               ),
             ),
-            SizedBox(width: 10),
-            // Column 2: Cage Settings (in a row), Hexagon, Feeders
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 children: [
@@ -111,12 +141,14 @@ class _MainLayoutState extends State<MainLayout> {
                       for (String location in ValueLists.cageLocations)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: CageStatusButton(
-                            name: location,
-                            setFunction: () =>
-                                widget.controlBoard.setCageLocation(location),
-                            listenable: widget.controlBoard.cageLocation(),
-                            setVal: location,
+                          child: NtStatusButton<String>(
+                            text: location,
+                            topicName: "Barge/Cage",
+                            defaultValue: ValueLists.cageLocations.first,
+                            valueToSet: location,
+                            width: 115,
+                            height: 50,
+                            builder: const RectangleBuilder(borderRadius: 10.0),
                           ),
                         ),
                     ],
@@ -124,9 +156,7 @@ class _MainLayoutState extends State<MainLayout> {
                   const SizedBox(height: 16),
                   Expanded(
                     child: Center(
-                      child: HexagonStack(
-                        controlBoard: widget.controlBoard,
-                      ),
+                      child: HexagonStack(),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -145,12 +175,14 @@ class _MainLayoutState extends State<MainLayout> {
                       for (String location in ValueLists.feederLocations)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: FeederStatusButton(
-                            name: location,
-                            setFunction: () =>
-                                widget.controlBoard.setFeederLocation(location),
-                            listenable: widget.controlBoard.feederLocation(),
-                            setVal: location,
+                          child: NtStatusButton<String>(
+                            text: location,
+                            topicName: "Feeder",
+                            defaultValue: ValueLists.feederLocations.first,
+                            valueToSet: location,
+                            width: 150,
+                            height: 75,
+                            builder: const RectangleBuilder(borderRadius: 10.0),
                           ),
                         ),
                     ],
@@ -179,20 +211,24 @@ class _MainLayoutState extends State<MainLayout> {
                       for (int level in ValueLists.reefLevels)
                         Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: LevelStatusButton(
-                                name: switch (level) {
-                                  0 => 'Remove Algae',
-                                  1 => 'Level 1 (Trough)',
-                                  _ => 'Level $level',
-                                },
-                                setFunction: () =>
-                                    widget.controlBoard.setReefLevel(level),
-                                listenable: widget.controlBoard.reefLevel(),
-                                setVal: level)),
+                            child: NtStatusButton<int>(
+                              text: switch (level) {
+                                0 => 'Remove Algae',
+                                1 => 'Level 1 (Trough)',
+                                _ => 'Level $level',
+                              },
+                              topicName: "Reef/Level",
+                              defaultValue: ValueLists.reefLevels.first,
+                              valueToSet: level,
+                              width: 150,
+                              height: 75,
+                              builder:
+                                  const RectangleBuilder(borderRadius: 20.0),
+                            )),
                     ],
                   ),
                   const SizedBox(height: 16),
-                                    Text(
+                  Text(
                     'Score',
                     style: TextStyle(
                       fontSize: 50,
@@ -200,17 +236,21 @@ class _MainLayoutState extends State<MainLayout> {
                       color: ControlBoardColors.headerText,
                     ),
                   ),
-                                    Column(
+                  Column(
                     children: [
                       for (String loc in ValueLists.scoreLocations)
                         Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: ScoreLocationStatusButton(
-                                name: loc,
-                                setFunction: () =>
-                                    widget.controlBoard.setScoreLocation(loc),
-                                listenable: widget.controlBoard.scoreLocation(),
-                                setVal: loc)),
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: NtStatusButton<String>(
+                            text: loc,
+                            topicName: "ScoreLocation",
+                            defaultValue: ValueLists.scoreLocations.first,
+                            valueToSet: loc,
+                            width: 150,
+                            height: 75,
+                            builder: const RectangleBuilder(borderRadius: 20.0),
+                          ),
+                        ),
                     ],
                   ),
                 ],
