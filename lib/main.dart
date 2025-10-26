@@ -1,5 +1,4 @@
-import 'package:control_board/layout/2025_layout.dart';
-import 'package:control_board/layout/2026_layout.dart';
+import 'package:control_board/layouts/2025/2025_layout.dart';
 import 'package:control_board/services/liana.dart';
 import 'package:control_board/utils/control_board_colors.dart';
 import 'package:control_board/widgets/settings_dialog.dart';

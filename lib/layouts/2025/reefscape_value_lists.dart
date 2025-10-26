@@ -1,6 +1,4 @@
-
 class ValueLists {
-
   static List<String> reefLocations = [
     'L',
     'K',
@@ -24,22 +22,17 @@ class ValueLists {
   ];
 
   static List<String> feederLocations = [
-      'LEFT',
-      'RIGHT',
+    'LEFT',
+    'RIGHT',
   ];
 
-  
   static List<String> cageLocations = [
-      'LEFT',
-      'CENTER',
-      'RIGHT',
+    'LEFT',
+    'CENTER',
+    'RIGHT',
   ];
 
-  static List<String> scoreLocations = [
-      'REEF',
-      'PROCESSOR',
-      'CAGE'
-  ];
+  static List<String> scoreLocations = ['REEF', 'PROCESSOR', 'CAGE'];
 
   static List<String> autoList = [
     'Left Start',
@@ -47,5 +40,4 @@ class ValueLists {
     'Right Start',
     'Buddy Save'
   ];
-
 }

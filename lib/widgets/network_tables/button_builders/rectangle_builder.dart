@@ -1,5 +1,5 @@
 import 'package:control_board/utils/control_board_colors.dart';
-import 'package:control_board/widgets/button_builders/nt_button_builder.dart';
+import 'package:control_board/widgets/network_tables/button_builders/nt_button_builder.dart';
 import 'package:flutter/material.dart';
 
 class RectangleBuilder extends NtButtonBuilder {

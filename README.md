@@ -1,49 +1,8 @@
-- [x] display a nt value from dashboard
-- [x] write a val to nt from app
+# Liana - FRC Control Board
 
+Liana is a Flutter-based control board application designed by 2064, originally to be used for the 2025 season, expanded to be evergreen.
 
-END GOAL ON FUNCTION
+### Why?
+The goal of Liana, originally refered to as Control Board, was to give the operator a virtual button board. Due to our approach in the 2025 game year, our robot changed shape many times throughout the season. This would have made it difficult to build a physical button board, as we would either have to wait til close to our first competition to create it, a time in which time is at an all time low, or creating something that handled every situation and was not used fully.
 
-- [ ] Display Gifs From PathPlanner based off of auto name posted
-
-READS
-- [ ] 'Dashboard/ControlBoard/Robot/SelectedAuto'
-['Name']
-
-- [ ] 'Dashboard/ControlBoard/Robot/HasCoral'
-[true - false]
-
-- [ ] 'Dashboard/ControlBoard/Robot/HasAlgae'
-[true - false]
-
-- [ ] 'Dashboard/ControlBoard/Robot/Clamped'
-[true - false]
-
-- [ ] 'Dashboard/ControlBoard/Robot/IsClimbed'
-[true - false]
-
-- [ ] 'Dashboard/ControlBoard/Robot/HasScored'
-[true - false]
-
-
-WRITES
-- [ ] 'Dashboard/ControlBoard/Reef/Location'
-[A - L]
-
-- [x] 'Dashboard/ControlBoard/Reef/Level'
-[0-4] (Algae clean = 0)
-
-- [ ] 'Dashboard/ControlBoard/Barge/Cage'
-['LEFT', 'CENTER', 'RIGHT']
-
-- [ ] 'Dashboard/ControlBoard/Feeder'
-['LEFT', 'RIGHT']
-
-- [ ] 'Dashboard/ControlBoard/ScoreLocation'
-['REEF', 'PROCESSOR']
-
-- [ ] 'Dashboard/ControlBoard/Robot/HasScored'
-[true - false]
-
-- [ ] retry connect to NTServer
-![UI](Controls.jpg)
+Although [Elastic](https://github.com/Gold872/elastic-dashboard) has the ability to update network tables with buttons, having more customization with the canvas means that we can create more expressive layouts than with just Elastic.

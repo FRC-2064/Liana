@@ -1,8 +1,8 @@
 import 'package:control_board/services/liana.dart';
 import 'package:control_board/services/nt_entry.dart';
 import 'package:control_board/utils/control_board_colors.dart';
-import 'package:control_board/widgets/button_builders/nt_button_builder.dart';
-import 'package:control_board/widgets/button_builders/rectangle_builder.dart';
+import 'package:control_board/widgets/network_tables/button_builders/nt_button_builder.dart';
+import 'package:control_board/widgets/network_tables/button_builders/rectangle_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
