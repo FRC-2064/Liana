@@ -3,7 +3,7 @@ import 'package:liana/widgets/network_tables/button_builders/hexagon_builder.dar
 import 'package:flutter/material.dart';
 import 'package:liana/widgets/network_tables/nt_status_button.dart';
 
-import 'package:liana/utils/control_board_colors.dart';
+import 'package:liana/utils/liana_colors.dart';
 import 'package:liana/layouts/2025/Reefscape_value_lists.dart';
 
 class HexagonStack extends StatefulWidget {
@@ -108,8 +108,8 @@ class _HexagonStackState extends State<HexagonStack> {
             top: centerPoint.dy - centerHexRadius,
             child: CustomPaint(
               painter: LargeHexagonPainter(
-                color: ControlBoardColors.cardBackground,
-                borderColor: ControlBoardColors.border,
+                color: LianaColors.cardBackground,
+                borderColor: LianaColors.border,
               ),
               child: SizedBox(
                 width: centerHexRadius * 2,

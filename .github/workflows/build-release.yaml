@@ -32,7 +32,7 @@ jobs:
           cache: true
 
       - name: Build Flutter App
-        run: flutter build windows --release
+        run: flutter build windows --release --build-name${{ env.APP_VERSION}} --build-number=1
 
       - name: Compile .ISS to .EXE Installer
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.7

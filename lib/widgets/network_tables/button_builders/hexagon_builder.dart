@@ -1,4 +1,4 @@
-import 'package:liana/utils/control_board_colors.dart';
+import 'package:liana/utils/liana_colors.dart';
 import 'package:liana/widgets/network_tables/button_builders/nt_button_builder.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -9,7 +9,7 @@ class HexagonBuilder extends NtButtonBuilder {
 
   const HexagonBuilder({
     this.borderWidth = 3.0,
-    this.borderColor = ControlBoardColors.border,
+    this.borderColor = LianaColors.border,
   });
 
   @override

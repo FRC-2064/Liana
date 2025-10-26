@@ -1,4 +1,4 @@
-import 'package:liana/utils/control_board_colors.dart';
+import 'package:liana/utils/liana_colors.dart';
 import 'package:flutter/material.dart';
 
 class SelectedAuto extends StatefulWidget {
@@ -32,11 +32,11 @@ class _SelectedAutoState extends State<SelectedAuto> {
       children: [
         DropdownButton<String>(
           value: currentValue,
-          dropdownColor: ControlBoardColors.cardBackground,
+          dropdownColor: LianaColors.cardBackground,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: ControlBoardColors.buttonText,
+            color: LianaColors.buttonText,
           ),
           items: widget.autoList
               .map((auto) => DropdownMenuItem(

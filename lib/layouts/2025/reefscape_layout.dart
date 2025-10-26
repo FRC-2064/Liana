@@ -4,10 +4,10 @@ import 'package:liana/widgets/network_tables/nt_bool_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:liana/widgets/network_tables/nt_status_button.dart';
-import 'package:liana/services/liana.dart';
-import 'package:liana/services/nt_entry.dart';
+import 'package:liana/services/network_tables/liana.dart';
+import 'package:liana/services/network_tables/nt_entry.dart';
 import 'package:liana/layouts/2025/reefscape_value_lists.dart';
-import 'package:liana/utils/control_board_colors.dart';
+import 'package:liana/utils/liana_colors.dart';
 import 'package:liana/layouts/2025/custom_widgets/hexagon_stack.dart';
 import 'package:liana/widgets/network_tables/selected_auto.dart';
 import 'package:liana/widgets/network_tables/timer.dart';
@@ -77,7 +77,7 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ControlBoardColors.background,
+      backgroundColor: LianaColors.background,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -131,7 +131,7 @@ class _MainLayoutState extends State<MainLayout> {
                     style: TextStyle(
                       fontSize: 50,
                       fontWeight: FontWeight.bold,
-                      color: ControlBoardColors.headerText,
+                      color: LianaColors.headerText,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -165,7 +165,7 @@ class _MainLayoutState extends State<MainLayout> {
                     style: TextStyle(
                       fontSize: 50,
                       fontWeight: FontWeight.bold,
-                      color: ControlBoardColors.headerText,
+                      color: LianaColors.headerText,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -202,7 +202,7 @@ class _MainLayoutState extends State<MainLayout> {
                     style: TextStyle(
                       fontSize: 50,
                       fontWeight: FontWeight.bold,
-                      color: ControlBoardColors.headerText,
+                      color: LianaColors.headerText,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -233,7 +233,7 @@ class _MainLayoutState extends State<MainLayout> {
                     style: TextStyle(
                       fontSize: 50,
                       fontWeight: FontWeight.bold,
-                      color: ControlBoardColors.headerText,
+                      color: LianaColors.headerText,
                     ),
                   ),
                   Column(

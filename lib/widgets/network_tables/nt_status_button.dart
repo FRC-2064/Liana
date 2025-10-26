@@ -1,6 +1,6 @@
-import 'package:liana/services/liana.dart';
-import 'package:liana/services/nt_entry.dart';
-import 'package:liana/utils/control_board_colors.dart';
+import 'package:liana/services/network_tables/liana.dart';
+import 'package:liana/services/network_tables/nt_entry.dart';
+import 'package:liana/utils/liana_colors.dart';
 import 'package:liana/widgets/network_tables/button_builders/nt_button_builder.dart';
 import 'package:liana/widgets/network_tables/button_builders/rectangle_builder.dart';
 import 'package:flutter/material.dart';
@@ -17,12 +17,12 @@ class NtStatusButton<T> extends StatefulWidget {
     this.height = 75.0,
     this.fontSize = 20.0,
     this.builder = const RectangleBuilder(),
-    this.selectedColor = ControlBoardColors.statusSelected,
-    this.unselectedColor = ControlBoardColors.statusUnselected,
-    this.selectedTextColor = ControlBoardColors.background,
-    this.unselectedTextColor = ControlBoardColors.buttonText,
-    this.missingDataColor = ControlBoardColors.background,
-    this.missingDataTextColor = ControlBoardColors.missing,
+    this.selectedColor = LianaColors.statusSelected,
+    this.unselectedColor = LianaColors.statusUnselected,
+    this.selectedTextColor = LianaColors.background,
+    this.unselectedTextColor = LianaColors.buttonText,
+    this.missingDataColor = LianaColors.background,
+    this.missingDataTextColor = LianaColors.missing,
   });
   final String topicName;
   final T valueToSet;

@@ -1,6 +1,6 @@
-import 'package:liana/services/liana.dart';
-import 'package:liana/services/nt_entry.dart';
-import 'package:liana/utils/control_board_colors.dart';
+import 'package:liana/services/network_tables/liana.dart';
+import 'package:liana/services/network_tables/nt_entry.dart';
+import 'package:liana/utils/liana_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,7 +39,7 @@ class _NtBoolIndicatorState extends State<NtBoolIndicator> {
       stream: _entry.stream(),
       initialData: _entry.value,
       builder: (context, snapshot) => Card(
-        color: ControlBoardColors.cardBackground,
+        color: LianaColors.cardBackground,
         child: Padding(
           padding: const EdgeInsets.only(
             bottom: 10,
@@ -55,7 +55,7 @@ class _NtBoolIndicatorState extends State<NtBoolIndicator> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: ControlBoardColors.buttonText,
+                  color: LianaColors.buttonText,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -65,9 +65,9 @@ class _NtBoolIndicatorState extends State<NtBoolIndicator> {
                 width: 100,
                 decoration: BoxDecoration(
                   color: switch (snapshot.data) {
-                    true => ControlBoardColors.boolTrue,
-                    false => ControlBoardColors.boolFalse,
-                    null => ControlBoardColors.missing,
+                    true => LianaColors.boolTrue,
+                    false => LianaColors.boolFalse,
+                    null => LianaColors.missing,
                   },
                   borderRadius: BorderRadius.circular(8),
                 ),

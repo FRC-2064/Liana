@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import '../utils/control_board_colors.dart';
+import '../utils/liana_colors.dart';
 
 class SettingsDialog extends StatefulWidget {
   const SettingsDialog({
@@ -61,13 +61,13 @@ class _SettingsDialogState extends State<SettingsDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: ControlBoardColors.background,
+      backgroundColor: LianaColors.background,
       title: Text(
         "Settings",
         style: TextStyle(
           fontSize: 30,
           fontWeight: FontWeight.bold,
-          color: ControlBoardColors.headerText,
+          color: LianaColors.headerText,
         ),
       ),
       content: SingleChildScrollView(
@@ -77,13 +77,13 @@ class _SettingsDialogState extends State<SettingsDialog> {
           children: [
             TextField(
               controller: _teamNumberController,
-              style: TextStyle(color: ControlBoardColors.buttonText),
+              style: TextStyle(color: LianaColors.buttonText),
               decoration: InputDecoration(
                 labelText: "Team Number",
-                labelStyle: TextStyle(color: ControlBoardColors.headerText),
-                hintStyle: TextStyle(color: ControlBoardColors.buttonText),
+                labelStyle: TextStyle(color: LianaColors.headerText),
+                hintStyle: TextStyle(color: LianaColors.buttonText),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: ControlBoardColors.headerText),
+                  borderSide: BorderSide(color: LianaColors.headerText),
                 ),
               ),
               keyboardType: TextInputType.number,
@@ -105,7 +105,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: ControlBoardColors.buttonText,
+                  color: LianaColors.buttonText,
                 ),
               )
             else
@@ -114,16 +114,16 @@ class _SettingsDialogState extends State<SettingsDialog> {
             // Updated GIF path TextField with a folder icon
             TextField(
               controller: _gifPathController,
-              style: TextStyle(color: ControlBoardColors.buttonText),
+              style: TextStyle(color: LianaColors.buttonText),
               decoration: InputDecoration(
                 labelText: "GIF Path",
-                labelStyle: TextStyle(color: ControlBoardColors.headerText),
-                hintStyle: TextStyle(color: ControlBoardColors.buttonText),
+                labelStyle: TextStyle(color: LianaColors.headerText),
+                hintStyle: TextStyle(color: LianaColors.buttonText),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: ControlBoardColors.headerText),
+                  borderSide: BorderSide(color: LianaColors.headerText),
                 ),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.folder, color: ControlBoardColors.buttonText),
+                  icon: Icon(Icons.folder, color: LianaColors.buttonText),
                   onPressed: _pickFolder,
                 ),
               ),
@@ -144,14 +144,14 @@ class _SettingsDialogState extends State<SettingsDialog> {
           },
           child: Text(
             "Save",
-            style: TextStyle(color: ControlBoardColors.buttonText),
+            style: TextStyle(color: LianaColors.buttonText),
           ),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
             "Cancel",
-            style: TextStyle(color: ControlBoardColors.buttonText),
+            style: TextStyle(color: LianaColors.buttonText),
           ),
         ),
       ],
@@ -197,10 +197,10 @@ class _RadioToggleSwitchState extends State<RadioToggleSwitch> {
                 topLeft: Radius.circular(10),
                 bottomLeft: Radius.circular(10),
               ),
-              border: Border.all(color: ControlBoardColors.border),
+              border: Border.all(color: LianaColors.border),
               color: !_isRobot
-                  ? ControlBoardColors.statusSelected
-                  : ControlBoardColors.statusUnselected),
+                  ? LianaColors.statusSelected
+                  : LianaColors.statusUnselected),
           child: TextButton(
             onPressed: () => setState(() {
               _isRobot = false;
@@ -210,9 +210,8 @@ class _RadioToggleSwitchState extends State<RadioToggleSwitch> {
               "Simulation",
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: !_isRobot
-                    ? ControlBoardColors.background
-                    : ControlBoardColors.buttonText,
+                color:
+                    !_isRobot ? LianaColors.background : LianaColors.buttonText,
               ),
             ),
           ),
@@ -226,10 +225,10 @@ class _RadioToggleSwitchState extends State<RadioToggleSwitch> {
                 topRight: Radius.circular(10),
                 bottomRight: Radius.circular(10),
               ),
-              border: Border.all(color: ControlBoardColors.border),
+              border: Border.all(color: LianaColors.border),
               color: _isRobot
-                  ? ControlBoardColors.statusSelected
-                  : ControlBoardColors.statusUnselected),
+                  ? LianaColors.statusSelected
+                  : LianaColors.statusUnselected),
           child: TextButton(
             onPressed: () => setState(() {
               _isRobot = true;
@@ -239,9 +238,8 @@ class _RadioToggleSwitchState extends State<RadioToggleSwitch> {
               "Robot",
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: _isRobot
-                    ? ControlBoardColors.background
-                    : ControlBoardColors.buttonText,
+                color:
+                    _isRobot ? LianaColors.background : LianaColors.buttonText,
               ),
             ),
           ),
