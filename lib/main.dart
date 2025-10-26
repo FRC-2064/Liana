@@ -1,4 +1,4 @@
-import 'package:liana/layouts/2025/2025_layout.dart';
+import 'package:liana/layouts/2025/reefscape_layout.dart';
 import 'package:liana/services/liana.dart';
 import 'package:liana/utils/control_board_colors.dart';
 import 'package:liana/widgets/settings_dialog.dart';
