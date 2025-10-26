@@ -1,0 +1,75 @@
+name: Manual Release Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Test version (e.g., 1.0.0-test)"
+        required: true
+        default: "0.0.0-test"
+      create_test_tag:
+        description: "Create a test tag (will be deleted after)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  test-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Build Flutter App
+        run: flutter build windows --release
+
+      - name: Compile Test Installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
+        with:
+          path: "installer/windows-installer.iss"
+          options: /DAPP_VERSION=${{ github.event.inputs.version }}
+
+      - name: Upload Test Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: liana-installer-test-v${{ github.event.inputs.version }}
+          path: installer/Output/*.exe
+          retention-days: 7
+
+      - name: Create Test Tag (Optional)
+        if: github.event.inputs.create_test_tag == 'true'
+        run: |
+          $testTag = "v${{ github.event.inputs.version }}"
+
+          git config user.name "GitHub Actions Bot"
+          git config user.email "github-actions@github.com"
+
+          git tag $testTag
+          git push origin $testTag
+
+          echo "::notice::Test tag created: $testTag - Remember to delete it manually after testing!"
+        shell: pwsh
+
+      - name: Test Summary
+        run: |
+          echo "### Release Test Completed! :white_check_mark:" >> $env:GITHUB_STEP_SUMMARY
+          echo "" >> $env:GITHUB_STEP_SUMMARY
+          echo "**Test Version:** ${{ github.event.inputs.version }}" >> $env:GITHUB_STEP_SUMMARY
+          echo "" >> $env:GITHUB_STEP_SUMMARY
+          echo "Download the installer artifact to verify the build." >> $env:GITHUB_STEP_SUMMARY
+          if ("${{ github.event.inputs.create_test_tag }}" -eq "true") {
+            echo "" >> $env:GITHUB_STEP_SUMMARY
+            echo "⚠️ **Test tag created:** v${{ github.event.inputs.version }}" >> $env:GITHUB_STEP_SUMMARY
+            echo "Remember to delete it after testing:" >> $env:GITHUB_STEP_SUMMARY
+            echo '```bash' >> $env:GITHUB_STEP_SUMMARY
+            echo "git tag -d v${{ github.event.inputs.version }}" >> $env:GITHUB_STEP_SUMMARY
+            echo "git push origin :refs/tags/v${{ github.event.inputs.version }}" >> $env:GITHUB_STEP_SUMMARY
+            echo '```' >> $env:GITHUB_STEP_SUMMARY
+          }
+        shell: pwsh

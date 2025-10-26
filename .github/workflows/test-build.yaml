@@ -1,0 +1,70 @@
+name: Test Windows Build
+
+on:
+  pull_request:
+    branches: [Trunk]
+  workflow_dispatch:
+    inputs:
+      build_installer:
+        description: "Build installer (slower)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  test-build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Analyze Flutter code
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        run: flutter test
+        continue-on-error: true
+
+      - name: Build Flutter App
+        run: flutter build windows --release
+
+      - name: Compile Test Installer
+        if: github.event.inputs.build_installer == 'true' || github.event_name == 'pull_request'
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
+        with:
+          path: "installer/windows-installer.iss"
+          options: /DAPP_VERSION=test-build-${{ github.run_number }}
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: liana-windows-build-${{ github.run_number }}
+          path: build/windows/x64/runner/Release/
+          retention-days: 7
+
+      - name: Upload Installer Artifact
+        if: github.event.inputs.build_installer == 'true' || github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: liana-installer-test-${{ github.run_number }}
+          path: installer/Output/*.exe
+          retention-days: 7
+
+      - name: Build Summary
+        run: |
+          echo "### Build Completed Successfully! :rocket:" >> $env:GITHUB_STEP_SUMMARY
+          echo "" >> $env:GITHUB_STEP_SUMMARY
+          echo "**Build Number:** ${{ github.run_number }}" >> $env:GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref_name }}" >> $env:GITHUB_STEP_SUMMARY
+          echo "" >> $env:GITHUB_STEP_SUMMARY
+          echo "Download the artifacts from the Actions tab to test the build." >> $env:GITHUB_STEP_SUMMARY
+        shell: pwsh
