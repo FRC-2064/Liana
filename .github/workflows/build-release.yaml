@@ -1,0 +1,56 @@
+name: Build & Release Windows Installer
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get Tag Name
+        run: |
+          $tag = ${env:GITHUB_REF} -replace "refs/tags/",""
+          echo "RELEASE_TAG=$tag" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: pwsh
+
+      - name: Setup Inno Setup
+        uses: Minionguy/setup-inno-setup@v1.1
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Build Flutter App
+        run: flutter build windows
+
+      - name: Create Installer
+        run: |
+          $version = "${{ env.RELEASE_TAG }}" -replace "v",""
+          iscc "installer\windows-installer.iss" /DAPP_VERSION=$version
+        shell: pwsh
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: installer/Output/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Frozen Release Branch
+        run: |
+          $tagName = "${{ env.RELEASE_TAG }}"
+          $branchName = "release/" + $tagName.Substring(1) # 'v1.0.0' -> 'release/1.0.0'
+
+          git config user.name "GitHub Actions Bot"
+          git config user.email "github-actions@github.com"
+
+          git branch $branchName $tagName
+          git push origin $branchName
+        shell: pwsh

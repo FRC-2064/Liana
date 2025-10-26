@@ -1,10 +1,10 @@
 import 'dart:math';
-import 'package:control_board/widgets/network_tables/button_builders/hexagon_builder.dart';
+import 'package:liana/widgets/network_tables/button_builders/hexagon_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:control_board/widgets/network_tables/nt_status_button.dart';
+import 'package:liana/widgets/network_tables/nt_status_button.dart';
 
-import 'package:control_board/utils/control_board_colors.dart';
-import 'package:control_board/layouts/2025/Reefscape_value_lists.dart';
+import 'package:liana/utils/control_board_colors.dart';
+import 'package:liana/layouts/2025/Reefscape_value_lists.dart';
 
 class HexagonStack extends StatefulWidget {
   const HexagonStack({
