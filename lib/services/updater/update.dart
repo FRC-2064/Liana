@@ -17,7 +17,6 @@ class Update {
   Update({this.checkInterval = const Duration(hours: 1)});
 
   void startPeriodicCheck(Function(UpdateInfo) onUpdateAvailable) {
-    // Check immediately on startup
     checkForUpdates().then((update) {
       if (update != null) {
         onUpdateAvailable(update);
@@ -58,7 +57,6 @@ class Update {
 
       return null;
     } catch (e) {
-      print('Error checking for updates: $e');
       return null;
     }
   }
@@ -80,7 +78,6 @@ class Update {
       }
       return null;
     } catch (e) {
-      print('Error fetching latest release: $e');
       return null;
     }
   }
@@ -122,7 +119,6 @@ class Update {
       }
       return false;
     } catch (e) {
-      print('Error launching download: $e');
       return false;
     }
   }
