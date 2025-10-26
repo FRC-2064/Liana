@@ -1,16 +1,16 @@
 import 'dart:async';
-import 'package:control_board/widgets/network_tables/button_builders/rectangle_builder.dart';
-import 'package:control_board/widgets/network_tables/nt_bool_indicator.dart';
+import 'package:liana/widgets/network_tables/button_builders/rectangle_builder.dart';
+import 'package:liana/widgets/network_tables/nt_bool_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:control_board/widgets/network_tables/nt_status_button.dart';
-import 'package:control_board/services/liana.dart';
-import 'package:control_board/services/nt_entry.dart';
-import 'package:control_board/layouts/2025/reefscape_value_lists.dart';
-import 'package:control_board/utils/control_board_colors.dart';
-import 'package:control_board/layouts/2025/custom_widgets/hexagon_stack.dart';
-import 'package:control_board/widgets/network_tables/selected_auto.dart';
-import 'package:control_board/widgets/network_tables/timer.dart';
+import 'package:liana/widgets/network_tables/nt_status_button.dart';
+import 'package:liana/services/liana.dart';
+import 'package:liana/services/nt_entry.dart';
+import 'package:liana/layouts/2025/reefscape_value_lists.dart';
+import 'package:liana/utils/control_board_colors.dart';
+import 'package:liana/layouts/2025/custom_widgets/hexagon_stack.dart';
+import 'package:liana/widgets/network_tables/selected_auto.dart';
+import 'package:liana/widgets/network_tables/timer.dart';
 
 class MainLayout extends StatefulWidget {
   final String gifBasePath;

@@ -1,6 +1,6 @@
-import 'package:control_board/services/liana.dart';
-import 'package:control_board/services/nt_entry.dart';
-import 'package:control_board/utils/control_board_colors.dart';
+import 'package:liana/services/liana.dart';
+import 'package:liana/services/nt_entry.dart';
+import 'package:liana/utils/control_board_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

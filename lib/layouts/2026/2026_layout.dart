@@ -1,5 +1,5 @@
-import 'package:control_board/widgets/network_tables/button_builders/hexagon_builder.dart';
-import 'package:control_board/widgets/network_tables/nt_status_button.dart';
+import 'package:liana/widgets/network_tables/button_builders/hexagon_builder.dart';
+import 'package:liana/widgets/network_tables/nt_status_button.dart';
 import 'package:flutter/material.dart';
 
 class Test2026Layout extends StatefulWidget {

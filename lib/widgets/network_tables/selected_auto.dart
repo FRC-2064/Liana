@@ -1,4 +1,4 @@
-import 'package:control_board/utils/control_board_colors.dart';
+import 'package:liana/utils/control_board_colors.dart';
 import 'package:flutter/material.dart';
 
 class SelectedAuto extends StatefulWidget {
@@ -57,7 +57,7 @@ class _SelectedAutoState extends State<SelectedAuto> {
           errorBuilder: (context, error, stackTrace) {
             // Fallback GIF
             return Image.asset(
-              '${widget.gifBasePath}/default.gif',
+              '${widget.gifBasePath}/left straight.gif',
               fit: BoxFit.contain,
             );
           },
