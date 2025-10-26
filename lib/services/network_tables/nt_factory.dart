@@ -1,4 +1,4 @@
-import 'package:liana/services/nt_entry.dart';
+import 'package:liana/services/network_tables/nt_entry.dart';
 import 'package:nt4/nt4.dart';
 
 class NtFactory {

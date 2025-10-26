@@ -1,4 +1,4 @@
-import 'package:liana/utils/control_board_colors.dart';
+import 'package:liana/utils/liana_colors.dart';
 import 'package:liana/widgets/network_tables/button_builders/nt_button_builder.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +10,7 @@ class RectangleBuilder extends NtButtonBuilder {
   const RectangleBuilder({
     this.borderRadius = 10.0,
     this.borderWidth = 4.0,
-    this.borderColor = ControlBoardColors.border,
+    this.borderColor = LianaColors.border,
   });
 
   @override

@@ -1,5 +1,5 @@
-import 'package:liana/services/nt_entry.dart';
-import 'package:liana/services/nt_factory.dart';
+import 'package:liana/services/network_tables/nt_entry.dart';
+import 'package:liana/services/network_tables/nt_factory.dart';
 import 'package:nt4/nt4.dart';
 
 /// Base class that stores the NT4 client and sets the prefix for all

@@ -1,8 +1,10 @@
 import 'package:liana/layouts/2025/reefscape_layout.dart';
-import 'package:liana/services/liana.dart';
-import 'package:liana/utils/control_board_colors.dart';
+import 'package:liana/services/network_tables/liana.dart';
+import 'package:liana/services/updater/update.dart';
+import 'package:liana/utils/liana_colors.dart';
 import 'package:liana/widgets/settings_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:liana/widgets/update_toast.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -36,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isRobot = true;
 
   late final Liana _liana;
+  late final Update _updater;
 
   void _openSettings() async {
     final result = await showDialog<Map<String, dynamic>>(
@@ -62,6 +65,19 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _liana = Liana(serverBaseAddress: _ip);
+    _updater = Update();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updater.startPeriodicCheck((updateInfo) {
+        if (mounted) {
+          UpdateToastManager.showUpdateToast(
+            context,
+            updateInfo,
+            _updater,
+          );
+        }
+      });
+    });
   }
 
   @override
@@ -69,14 +85,14 @@ class _MyHomePageState extends State<MyHomePage> {
     return Provider<Liana>(
       create: (_) => _liana,
       child: Scaffold(
-        backgroundColor: ControlBoardColors.background,
+        backgroundColor: LianaColors.background,
         body: MainLayout(gifBasePath: _baseGifPath),
         floatingActionButton: FloatingActionButton(
           onPressed: _openSettings,
-          backgroundColor: ControlBoardColors.cardBackground,
+          backgroundColor: LianaColors.cardBackground,
           child: Icon(
             Icons.settings,
-            color: ControlBoardColors.statusSelected,
+            color: LianaColors.statusSelected,
           ),
         ),
       ),

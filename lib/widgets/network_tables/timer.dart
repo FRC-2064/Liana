@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:liana/services/liana.dart';
-import 'package:liana/services/nt_entry.dart';
+import 'package:liana/services/network_tables/liana.dart';
+import 'package:liana/services/network_tables/nt_entry.dart';
 
 class NtTimer extends StatefulWidget {
   const NtTimer({

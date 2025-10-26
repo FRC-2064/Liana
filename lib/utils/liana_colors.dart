@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ControlBoardColors {
+class LianaColors {
   static const Color background = Color.fromARGB(255, 24, 24, 24);
   static const Color buttonText = Colors.white;
   static const Color headerText = Color.fromARGB(255, 255, 101, 101);
