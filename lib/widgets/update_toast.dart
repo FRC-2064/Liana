@@ -44,7 +44,7 @@ class UpdateToast extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  Icons.system_update,
+                  Icons.update,
                   color: LianaColors.statusSelected,
                   size: 32,
                 ),
