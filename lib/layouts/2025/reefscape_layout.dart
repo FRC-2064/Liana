@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:liana/widgets/network_tables/button_builders/rectangle_builder.dart';
-import 'package:liana/widgets/network_tables/nt_bool_indicator.dart';
+import 'package:liana/widgets/network_tables/nt_bool.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:liana/widgets/network_tables/nt_status_button.dart';
@@ -97,13 +97,13 @@ class _MainLayoutState extends State<MainLayout> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(width: 2),
-                      NtBoolIndicator(
+                      NtBool(
                         name: 'Coral',
                         topicName: '/Robot/HasCoral',
                         defaultValue: false,
                       ),
                       const SizedBox(width: 2),
-                      NtBoolIndicator(
+                      NtBool(
                         name: 'Clamped',
                         topicName: '/Robot/Clamped',
                         defaultValue: false,
