@@ -2,6 +2,7 @@ import 'package:liana/utils/liana_colors.dart';
 import 'package:liana/widgets/network_tables/button_builders/nt_button_builder.dart';
 import 'package:flutter/material.dart';
 
+/// a [NtButtonBuilder] that draws a rectangle.
 class RectangleBuilder extends NtButtonBuilder {
   final double borderRadius;
   final double borderWidth;

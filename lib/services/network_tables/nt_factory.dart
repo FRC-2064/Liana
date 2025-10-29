@@ -1,6 +1,9 @@
 import 'package:liana/services/network_tables/nt_entry.dart';
 import 'package:nt4/nt4.dart';
 
+/// A factory class that builds and distributes
+/// the [NtEntry]s for topics, giving the Network Table
+/// prefix of 'Liana/'
 class NtFactory {
   final NT4Client _client;
   final String _prefix = 'Liana/';
@@ -42,6 +45,7 @@ class NtFactory {
     return '$_prefix/$name';
   }
 
+  /// Converts the generic [T] into a [NT4TypeStr].
   String _getTypeFromValue<T>(T value) {
     if (value is bool) return NT4TypeStr.typeBool;
     if (value is int) return NT4TypeStr.typeInt;

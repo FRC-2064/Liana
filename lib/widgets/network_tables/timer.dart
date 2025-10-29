@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:liana/services/network_tables/liana.dart';
 import 'package:liana/services/network_tables/nt_entry.dart';
 
+/// [Widget] to display the remaining match time.
 class NtTimer extends StatefulWidget {
   const NtTimer({
     super.key,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Default Colors for the application.
 class LianaColors {
   static const Color background = Color.fromARGB(255, 24, 24, 24);
   static const Color buttonText = Colors.white;

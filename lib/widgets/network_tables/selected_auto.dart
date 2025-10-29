@@ -1,6 +1,11 @@
+import 'package:liana/services/network_tables/nt_entry.dart';
 import 'package:liana/utils/liana_colors.dart';
 import 'package:flutter/material.dart';
 
+/// A [Widget] to select the autonomous routine that
+/// is going to be run that match. Options are read
+/// from the robots available and the [NtEntry] is read
+/// on the robot on autonomous init.
 class SelectedAuto extends StatefulWidget {
   const SelectedAuto({
     required this.setFunction,
@@ -51,13 +56,16 @@ class _SelectedAutoState extends State<SelectedAuto> {
           },
         ),
         const SizedBox(height: 16),
+        // if there is no value for the current auto then
+        // return the default gif.
         Image.asset(
           '${widget.gifBasePath}/${currentValue ?? 'default'}.gif',
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
-            // Fallback GIF
+            // if the path DNE for that auto, or if there is
+            // some other error, return the default gif.
             return Image.asset(
-              '${widget.gifBasePath}/left straight.gif',
+              '${widget.gifBasePath}/default.gif',
               fit: BoxFit.contain,
             );
           },

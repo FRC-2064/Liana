@@ -3,6 +3,7 @@ import 'package:liana/widgets/network_tables/button_builders/nt_button_builder.d
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+/// a [NtButtonBuilder] that draws a hexagon.
 class HexagonBuilder extends NtButtonBuilder {
   final double borderWidth;
   final Color borderColor;
@@ -36,6 +37,8 @@ class HexagonBuilder extends NtButtonBuilder {
   }
 }
 
+/// [CustomPainter] to draw the haxgon based on
+/// the path, color, and border information.
 class HexagonPainter extends CustomPainter {
   final Color color;
   final Color borderColor;
@@ -63,6 +66,8 @@ class HexagonPainter extends CustomPainter {
     canvas.drawPath(path, borderPaint);
   }
 
+  /// Takes in a [size] as the diameter of the
+  /// circle that the hexagon is inscribed within.
   Path _createHexagonPath(Size size) {
     final double w = size.width;
     final double h = size.height;

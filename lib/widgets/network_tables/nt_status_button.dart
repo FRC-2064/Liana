@@ -6,6 +6,10 @@ import 'package:liana/widgets/network_tables/button_builders/rectangle_builder.d
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// Generic [Widget] button for assigning and reading values from
+/// a [NtEntry]. The status of the button changes based on
+/// the value returned from the robot, not the action taken
+/// on Liana.
 class NtStatusButton<T> extends StatefulWidget {
   const NtStatusButton({
     super.key,
