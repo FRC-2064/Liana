@@ -4,6 +4,9 @@ import 'package:liana/utils/liana_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// a [Widget] that focuses on [bool]s. Contains an indicator
+/// and an optional [isSwitch] that allows for bool control
+/// rather than just viewing.
 class NtBool extends StatefulWidget {
   const NtBool({
     super.key,

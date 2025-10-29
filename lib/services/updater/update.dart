@@ -6,6 +6,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
+/// Class handles the update checking. functionality.
+/// Always points to the latest release of 'FRC-2064/Liana' on
+/// github.
 class Update {
   static const String _ghRepo = 'FRC-2064/Liana';
   static const String _ghUrl =
@@ -36,6 +39,9 @@ class Update {
     _updateCheckTimer = null;
   }
 
+  /// Get the current version and latest from
+  /// github, compares. If an update is available then
+  /// return the [UpdateInfo], else return nothing.
   Future<UpdateInfo?> checkForUpdates() async {
     try {
       final currentVersion = await _getCurrentVersion();
@@ -61,11 +67,15 @@ class Update {
     }
   }
 
+  /// Check the current app to see what verion
+  /// it is running. This gets set by the windows-installer.iss file
+  /// and the github workflow for tag releases.
   Future<String> _getCurrentVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.version;
   }
 
+  /// Get the releases from github using their api.
   Future<Map<String, dynamic>?> _fetchLatestRelease() async {
     try {
       final response = await http.get(
@@ -82,6 +92,7 @@ class Update {
     }
   }
 
+  /// Get the install executable download URL from github.
   String _getInstallerUrl(Map<String, dynamic> release) {
     final assets = release['assets'] as List<dynamic>? ?? [];
 
@@ -94,11 +105,14 @@ class Update {
     return release['html_url'];
   }
 
+  /// Convert a [version] tag into a list of ints.
   List<int> _parseVersion(String version) {
     final cleaned = version.replaceAll('v', '').split('-')[0];
     return cleaned.split('.').map((e) => int.tryParse(e) ?? 0).toList();
   }
 
+  /// Compare two int lists [a] and [b], return true if
+  /// [a] is a newer version than [b].
   bool _isNewerVersion(List<int> a, List<int> b) {
     for (int i = 0; i < 3; i++) {
       final aVal = i < a.length ? a[i] : 0;
@@ -110,6 +124,8 @@ class Update {
     return false;
   }
 
+  /// fetch the installer, if there is an issue,
+  /// return false if errors.
   Future<bool> downloadAndInstall(String downloadUrl) async {
     try {
       final uri = Uri.parse(downloadUrl);

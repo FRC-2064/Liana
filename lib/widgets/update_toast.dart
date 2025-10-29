@@ -3,6 +3,8 @@ import 'package:liana/services/updater/update.dart';
 import 'package:liana/services/updater/update_info.dart';
 import 'package:liana/utils/liana_colors.dart';
 
+/// [Widget] displayed when an [Update] is available
+/// on the github.
 class UpdateToast extends StatelessWidget {
   final UpdateInfo updateInfo;
   final VoidCallback onDismiss;

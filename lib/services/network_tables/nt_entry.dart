@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:nt4/nt4.dart';
 
+/// A class that represents a Network Table Item. This
+/// stores the the [_type] of value, then [_subInterval] in which
+/// to update the stream, and the [_topic](writer)
+/// and [_sub](reader) for each item
 class NtEntry<T> {
   final NT4Client _client;
   final String _fullTopicName;
@@ -38,7 +42,6 @@ class NtEntry<T> {
   }
 
   Stream<T> stream() => _streamController.stream;
-
   T? get value => _lastValue;
 
   void set(T value) {

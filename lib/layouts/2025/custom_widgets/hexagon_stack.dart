@@ -20,8 +20,6 @@ class HexagonStack extends StatefulWidget {
     super.key,
   });
 
-  // Notice: 'Liana controlBoard' parameter is removed.
-
   final double scale;
   final double centerHexSizeMultiplier;
   final double outerHexSizeMultiplier;

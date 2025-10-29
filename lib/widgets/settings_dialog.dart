@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../utils/liana_colors.dart';
 
+/// [Widget] to display settings as a modal. This includes
+/// the team number, which builds the robot ip, whether we are
+/// looking at the robot or a sim, and where the GIFs for
+/// the auto routines are stored.
 class SettingsDialog extends StatefulWidget {
   const SettingsDialog({
     required this.teamNumber,
@@ -23,6 +27,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
   final TextEditingController _gifPathController = TextEditingController();
   bool _isRobot = false;
 
+  /// Builds the [_robotIp] from the given
+  /// team number inside the team number text
+  /// box.
   String get _robotIp {
     final team = _teamNumberController.text;
     if (team.length == 4) {
@@ -49,7 +56,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
   }
 
   Future<void> _pickFolder() async {
-    // Opens a folder selection dialog.
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
     if (selectedDirectory != null) {
       setState(() {
@@ -111,7 +117,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
             else
               const SizedBox(height: 29),
             const SizedBox(height: 16),
-            // Updated GIF path TextField with a folder icon
             TextField(
               controller: _gifPathController,
               style: TextStyle(color: LianaColors.buttonText),
