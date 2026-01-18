@@ -27,13 +27,14 @@ class SelectedAuto extends StatefulWidget {
 class _SelectedAutoState extends State<SelectedAuto> {
   @override
   Widget build(BuildContext context) {
-    final String? currentValue = widget.selectedAuto != null &&
+    final String? currentValue =
+        widget.selectedAuto != null &&
             widget.autoList.contains(widget.selectedAuto)
         ? widget.selectedAuto
         : (widget.autoList.isNotEmpty ? widget.autoList.first : null);
 
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: .min,
       children: [
         DropdownButton<String>(
           value: currentValue,
@@ -44,10 +45,7 @@ class _SelectedAutoState extends State<SelectedAuto> {
             color: LianaColors.buttonText,
           ),
           items: widget.autoList
-              .map((auto) => DropdownMenuItem(
-                    value: auto,
-                    child: Text(auto),
-                  ))
+              .map((auto) => DropdownMenuItem(value: auto, child: Text(auto)))
               .toList(),
           onChanged: (value) {
             if (value != null) {
