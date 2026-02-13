@@ -27,6 +27,10 @@ class Liana {
   Stream<bool> connectionStatus() => _client.connectionStatusStream();
   bool get isConnected => _isConnected;
 
+  void dispose() {
+    _factory.clear();
+  }
+
   /// Takes a Network Table topic [name], a default
   /// value [defaultValue] and an optional [interval] and
   /// returns the [NtEntry]. If the Network Table topic already
