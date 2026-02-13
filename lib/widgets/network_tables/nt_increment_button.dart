@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:liana/services/network_tables/liana.dart';
 import 'package:liana/services/network_tables/nt_entry.dart';
+import 'package:liana/utils/liana_colors.dart';
 import 'package:provider/provider.dart';
 
 class NtIncrementButton extends StatefulWidget {
@@ -36,6 +38,10 @@ class NtIncrementButton extends StatefulWidget {
 class _NtIncrementButtonState extends State<NtIncrementButton> {
   late final NtEntry<double> _entry;
   late final Liana _liana;
+  Timer? _holdTimer;
+  Timer? _flashTimer;
+  bool _isHolding = false;
+  bool _isFlashing = false;
 
   @override
   void initState() {
@@ -44,8 +50,59 @@ class _NtIncrementButtonState extends State<NtIncrementButton> {
     _entry = _liana.getEntry(widget.topicName, defaultValue: 0);
   }
 
-  void _onPress() {
+  @override
+  void dispose() {
+    _holdTimer?.cancel();
+    _flashTimer?.cancel();
+    super.dispose();
+  }
+
+  void _increment() {
     _entry.set((_entry.value ?? 0) + widget.incrementAmount);
+    _triggerFlash();
+  }
+
+  void _triggerFlash() {
+    if (mounted) {
+      setState(() => _isFlashing = true);
+      _flashTimer?.cancel();
+      _flashTimer = Timer(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          setState(() => _isFlashing = false);
+        }
+      });
+    }
+  }
+
+  void _onTapDown(TapDownDetails details) {
+    _increment(); // Immediate increment on press
+
+    // Start continuous increment after initial delay
+    _holdTimer = Timer(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        setState(() => _isHolding = true);
+        // Repeat increment while holding
+        _holdTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+          _increment();
+        });
+      }
+    });
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    _stopHolding();
+  }
+
+  void _onTapCancel() {
+    _stopHolding();
+  }
+
+  void _stopHolding() {
+    _holdTimer?.cancel();
+    _holdTimer = null;
+    if (mounted) {
+      setState(() => _isHolding = false);
+    }
   }
 
   @override
@@ -55,24 +112,35 @@ class _NtIncrementButtonState extends State<NtIncrementButton> {
       initialData: _liana.isConnected,
       builder: (context, snapshot) {
         final bool isConnected = snapshot.data ?? false;
+        final backgroundColor = _isFlashing
+            ? LianaColors.statusSelected // Red flash
+            : (isConnected ? widget.activeColor : widget.inactiveColor);
+
         return SizedBox(
           width: widget.width,
           height: widget.height,
-          child: ElevatedButton(
-            onPressed: _onPress,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isConnected ? widget.activeColor : widget.inactiveColor,
-              foregroundColor: isConnected ? widget.activeTextColor : widget.inactiveTextColor,
-              shape: RoundedRectangleBorder(
+          child: GestureDetector(
+            onTapDown: _onTapDown,
+            onTapUp: _onTapUp,
+            onTapCancel: _onTapCancel,
+            child: Container(
+              decoration: BoxDecoration(
+                color: backgroundColor,
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2,
+                ),
               ),
-              padding: EdgeInsets.zero,
-            ),
-            child: Text(
-              widget.text,
-              style: TextStyle(
-                fontSize: widget.fontSize,
-                fontWeight: FontWeight.bold,
+              child: Center(
+                child: Text(
+                  widget.text,
+                  style: TextStyle(
+                    fontSize: widget.fontSize,
+                    fontWeight: FontWeight.bold,
+                    color: isConnected ? widget.activeTextColor : widget.inactiveTextColor,
+                  ),
+                ),
               ),
             ),
           ),

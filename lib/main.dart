@@ -1,4 +1,5 @@
 import 'package:liana/layouts/2025/reefscape_layout.dart';
+import 'package:liana/layouts/2026/main_layout.dart';
 import 'package:liana/services/network_tables/liana.dart';
 import 'package:liana/services/updater/update.dart';
 import 'package:liana/utils/liana_colors.dart';
@@ -86,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
       create: (_) => _liana,
       child: Scaffold(
         backgroundColor: LianaColors.background,
-        body: MainLayout(gifBasePath: _baseGifPath),
+        body: MainLayout2026(gifBasePath: _baseGifPath),
         floatingActionButton: FloatingActionButton(
           onPressed: _openSettings,
           backgroundColor: LianaColors.cardBackground,
