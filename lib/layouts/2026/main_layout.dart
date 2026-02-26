@@ -25,7 +25,7 @@ class _MainLayout2026State extends State<MainLayout2026> {
   late final NtEntry<String> _selectedAutoEntry;
 
   String? selectedAuto;
-  List<String> autoList = ValueLists2026.autoList;
+  List<String> autoList = [];
 
   StreamSubscription? _autosSubscription;
   StreamSubscription? _selectedAutoSubscription;
@@ -36,14 +36,14 @@ class _MainLayout2026State extends State<MainLayout2026> {
     _liana = Provider.of<Liana>(context, listen: false);
 
     _autosEntry = _liana.getEntry<List<String>>(
-      '/Robot/Autos',
-      defaultValue: ValueLists2026.autoList,
+      'Robot/Autos',
+      defaultValue: [],
     );
 
-    autoList = _autosEntry.value ?? ValueLists2026.autoList;
+    autoList = _autosEntry.value ?? [];
     _selectedAutoEntry = _liana.getEntry<String>(
       'SelectedAuto',
-      defaultValue: autoList.isNotEmpty ? autoList.first : 'Default Auto',
+      defaultValue: autoList.isNotEmpty ? autoList.first : '',
     );
     selectedAuto = _selectedAutoEntry.value;
 
@@ -51,7 +51,9 @@ class _MainLayout2026State extends State<MainLayout2026> {
       if (autos.isNotEmpty) {
         setState(() {
           autoList = autos;
-          if (!autoList.contains(selectedAuto)) {
+          if (selectedAuto == null ||
+              selectedAuto!.isEmpty ||
+              !autoList.contains(selectedAuto)) {
             selectedAuto = autoList.first;
             _selectedAutoEntry.set(selectedAuto!);
           }
@@ -85,7 +87,7 @@ class _MainLayout2026State extends State<MainLayout2026> {
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: MatchTimeline(
-              topicName: '/Robot/GameTime',
+              topicName: 'Robot/GameTime',
               defaultValue: '160',
               height: 60,
             ),
@@ -103,7 +105,7 @@ class _MainLayout2026State extends State<MainLayout2026> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const NtTimer(
-                          topicName: '/Robot/GameTime',
+                          topicName: 'Robot/GameTime',
                           defaultValue: '135',
                         ),
                         const SizedBox(height: 32),
@@ -113,13 +115,13 @@ class _MainLayout2026State extends State<MainLayout2026> {
                           children: const [
                             NtBool(
                               name: 'At Position',
-                              topicName: '/Robot/AtPosition',
+                              topicName: 'Robot/AtPosition',
                               defaultValue: false,
                             ),
                             SizedBox(width: 8),
                             NtBool(
                               name: 'Hopper Full',
-                              topicName: '/Robot/HopperFull',
+                              topicName: 'Robot/HopperFull',
                               defaultValue: false,
                             ),
                           ],
@@ -131,9 +133,7 @@ class _MainLayout2026State extends State<MainLayout2026> {
                             setFunction: (a) {
                               _selectedAutoEntry.set(a);
                             },
-                            autoList: autoList.isNotEmpty
-                                ? autoList
-                                : ['Default Auto'],
+                            autoList: autoList,
                             gifBasePath: widget.gifBasePath,
                           ),
                         ),
@@ -149,7 +149,7 @@ class _MainLayout2026State extends State<MainLayout2026> {
                       children: const [
                         NtAdjustment(
                           title: 'HOOD',
-                          topicName: '/Robot/HoodAngle',
+                          topicName: 'Robot/HoodAngle',
                           incrementAmount: ValueLists2026.hoodIncrement,
                           defaultValue: ValueLists2026.hoodDefault,
                           minValue: ValueLists2026.hoodMin,
@@ -171,7 +171,7 @@ class _MainLayout2026State extends State<MainLayout2026> {
                         SizedBox(height: 24),
                         NtAdjustment(
                           title: 'FLYWHEEL',
-                          topicName: '/Robot/FlywheelRPM',
+                          topicName: 'Robot/FlywheelRPM',
                           incrementAmount: ValueLists2026.flywheelIncrement,
                           defaultValue: ValueLists2026.flywheelDefault,
                           minValue: ValueLists2026.flywheelMin,
@@ -193,7 +193,7 @@ class _MainLayout2026State extends State<MainLayout2026> {
                         SizedBox(height: 24),
                         NtAdjustment(
                           title: 'TURRET',
-                          topicName: '/Robot/TurretAngle',
+                          topicName: 'Robot/TurretAngle',
                           incrementAmount: ValueLists2026.turretIncrement,
                           defaultValue: ValueLists2026.turretDefault,
                           minValue: ValueLists2026.turretMin,

@@ -18,6 +18,8 @@ class NtIncrementButton extends StatefulWidget {
     required this.activeTextColor,
     required this.inactiveColor,
     required this.inactiveTextColor,
+    this.minValue = -100.0,
+    this.maxValue = 100.0,
   });
 
   final String topicName;
@@ -30,6 +32,8 @@ class NtIncrementButton extends StatefulWidget {
   final Color inactiveTextColor;
   final Color activeColor;
   final Color inactiveColor;
+  final double minValue;
+  final double maxValue;
 
   @override
   State<NtIncrementButton> createState() => _NtIncrementButtonState();
@@ -40,7 +44,6 @@ class _NtIncrementButtonState extends State<NtIncrementButton> {
   late final Liana _liana;
   Timer? _holdTimer;
   Timer? _flashTimer;
-  bool _isHolding = false;
   bool _isFlashing = false;
 
   @override
@@ -58,7 +61,12 @@ class _NtIncrementButtonState extends State<NtIncrementButton> {
   }
 
   void _increment() {
-    _entry.set((_entry.value ?? 0) + widget.incrementAmount);
+    final double currentValue = _entry.value ?? 0;
+    final double newValue = (currentValue + widget.incrementAmount).clamp(
+      widget.minValue,
+      widget.maxValue,
+    );
+    _entry.set(newValue);
     _triggerFlash();
   }
 
@@ -75,13 +83,10 @@ class _NtIncrementButtonState extends State<NtIncrementButton> {
   }
 
   void _onTapDown(TapDownDetails details) {
-    _increment(); // Immediate increment on press
+    _increment();
 
-    // Start continuous increment after initial delay
     _holdTimer = Timer(const Duration(milliseconds: 500), () {
       if (mounted) {
-        setState(() => _isHolding = true);
-        // Repeat increment while holding
         _holdTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
           _increment();
         });
@@ -100,9 +105,6 @@ class _NtIncrementButtonState extends State<NtIncrementButton> {
   void _stopHolding() {
     _holdTimer?.cancel();
     _holdTimer = null;
-    if (mounted) {
-      setState(() => _isHolding = false);
-    }
   }
 
   @override
@@ -113,7 +115,7 @@ class _NtIncrementButtonState extends State<NtIncrementButton> {
       builder: (context, snapshot) {
         final bool isConnected = snapshot.data ?? false;
         final backgroundColor = _isFlashing
-            ? LianaColors.statusSelected // Red flash
+            ? LianaColors.statusSelected
             : (isConnected ? widget.activeColor : widget.inactiveColor);
 
         return SizedBox(

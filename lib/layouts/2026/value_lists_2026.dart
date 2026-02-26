@@ -1,10 +1,6 @@
 class ValueLists2026 {
   static List<String> autoList = [
-    '4 Piece Auto',
-    '3 Piece Auto',
-    '2 Piece Auto',
-    'Mobility Auto',
-    'Do Nothing',
+    'pathplanner'
   ];
 
   static const double hoodMin = -45.0;

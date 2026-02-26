@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:liana/services/network_tables/nt_entry.dart';
 import 'package:liana/utils/liana_colors.dart';
 import 'package:flutter/material.dart';
@@ -25,16 +26,62 @@ class SelectedAuto extends StatefulWidget {
 }
 
 class _SelectedAutoState extends State<SelectedAuto> {
+  Widget _buildGif(String path, double width, double height) {
+    if (path.startsWith('assets/')) {
+      return Image.asset(
+        path,
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Image.asset(
+            '${widget.gifBasePath}/default.gif',
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+          );
+        },
+      );
+    } else {
+      return Image.file(
+        File(path),
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Image.file(
+            File('${widget.gifBasePath}/default.gif'),
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                'assets/gifs/default.gif',
+                width: width,
+                height: height,
+                fit: BoxFit.cover,
+              );
+            },
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final String? currentValue =
         widget.selectedAuto != null &&
-            widget.autoList.contains(widget.selectedAuto)
-        ? widget.selectedAuto
-        : (widget.autoList.isNotEmpty ? widget.autoList.first : null);
+                widget.selectedAuto!.isNotEmpty &&
+                widget.autoList.contains(widget.selectedAuto)
+            ? widget.selectedAuto
+            : (widget.autoList.isNotEmpty ? widget.autoList.first : null);
+
+    final String gifPath =
+        '${widget.gifBasePath}/${currentValue ?? 'default'}.gif';
 
     return Column(
-      mainAxisSize: .min,
+      mainAxisSize: MainAxisSize.min,
       children: [
         DropdownButton<String>(
           value: currentValue,
@@ -44,9 +91,17 @@ class _SelectedAutoState extends State<SelectedAuto> {
             fontWeight: FontWeight.bold,
             color: LianaColors.buttonText,
           ),
-          items: widget.autoList
-              .map((auto) => DropdownMenuItem(value: auto, child: Text(auto)))
-              .toList(),
+          items: widget.autoList.isNotEmpty
+              ? widget.autoList
+                  .map(
+                      (auto) => DropdownMenuItem(value: auto, child: Text(auto)))
+                  .toList()
+              : [
+                  const DropdownMenuItem(
+                    value: null,
+                    child: Text('No autos available'),
+                  )
+                ],
           onChanged: (value) {
             if (value != null) {
               widget.setFunction(value);
@@ -54,19 +109,13 @@ class _SelectedAutoState extends State<SelectedAuto> {
           },
         ),
         const SizedBox(height: 16),
-        // if there is no value for the current auto then
-        // return the default gif.
-        Image.asset(
-          '${widget.gifBasePath}/${currentValue ?? 'default'}.gif',
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            // if the path DNE for that auto, or if there is
-            // some other error, return the default gif.
-            return Image.asset(
-              '${widget.gifBasePath}/default.gif',
-              fit: BoxFit.contain,
-            );
-          },
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: SizedBox(
+            width: 480,
+            height: 270,
+            child: _buildGif(gifPath, 480, 270),
+          ),
         ),
       ],
     );

@@ -106,6 +106,8 @@ class _NtAdjustmentState extends State<NtAdjustment> {
                       fontSize: 18,
                       height: widget.height,
                       width: widget.width,
+                      minValue: widget.minValue,
+                      maxValue: widget.maxValue,
                     ),
                     const SizedBox(width: 24),
                     Column(
@@ -157,6 +159,8 @@ class _NtAdjustmentState extends State<NtAdjustment> {
                       fontSize: 18,
                       height: widget.height,
                       width: widget.width,
+                      minValue: widget.minValue,
+                      maxValue: widget.maxValue,
                     ),
                   ],
                 ),

@@ -29,7 +29,7 @@ class NtTimer extends StatefulWidget {
 }
 
 class _NtTimerState extends State<NtTimer> {
-  late final NtEntry<String> _entry;
+  late final NtEntry<double> _entry;
   bool _isRed = false;
   int _lastSecond = -1;
 
@@ -37,69 +37,58 @@ class _NtTimerState extends State<NtTimer> {
   void initState() {
     super.initState();
     final liana = Provider.of<Liana>(context, listen: false);
-    _entry = liana.getEntry<String>(
+    
+    double initialValue = -1.0;
+    try {
+      initialValue = double.parse(widget.defaultValue);
+    } catch (_) {}
+
+    _entry = liana.getEntry<double>(
       widget.topicName,
-      defaultValue: widget.defaultValue,
+      defaultValue: initialValue,
     );
   }
 
-  String _formatTime(String secondsString) {
-    try {
-      if (secondsString == '-1') {
-        return '--:--';
-      }
-      double seconds = double.parse(secondsString);
-      int totalSeconds = seconds.floor();
-      int minutes = totalSeconds ~/ 60;
-      int remainingSeconds = totalSeconds % 60;
-
-      return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
-    } catch (e) {
+  String _formatTime(double seconds) {
+    if (seconds < 0) {
       return '--:--';
     }
+    int totalSeconds = seconds.floor();
+    int minutes = totalSeconds ~/ 60;
+    int remainingSeconds = totalSeconds % 60;
+
+    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<String>(
+    return StreamBuilder<double>(
       stream: _entry.stream(),
       initialData: _entry.value,
       builder: (context, snapshot) {
-        String data = snapshot.data ?? widget.defaultValue;
-        String timeString = _formatTime(data);
+        double seconds = snapshot.data ?? -1.0;
+        String timeString = _formatTime(seconds);
 
-        try {
-          double seconds = double.parse(data);
-          int currentSecond = seconds.floor();
+        int currentSecond = seconds.floor();
 
-          if (seconds <= widget.flashStartTime &&
-              seconds > widget.flashEndTime &&
-              currentSecond != _lastSecond) {
-            _isRed = !_isRed;
-            _lastSecond = currentSecond;
-          } else if (seconds <= widget.flashEndTime ||
-              seconds > widget.flashStartTime) {
-            _isRed = false;
-          }
-
-          return Text(
-            timeString,
-            style: TextStyle(
-              color: _isRed ? widget.flashColor : widget.defaultColor,
-              fontWeight: FontWeight.bold,
-              fontSize: widget.fontSize,
-            ),
-          );
-        } catch (e) {
-          return Text(
-            timeString,
-            style: TextStyle(
-              color: widget.defaultColor,
-              fontWeight: FontWeight.bold,
-              fontSize: widget.fontSize,
-            ),
-          );
+        if (seconds <= widget.flashStartTime &&
+            seconds > widget.flashEndTime &&
+            currentSecond != _lastSecond) {
+          _isRed = !_isRed;
+          _lastSecond = currentSecond;
+        } else if (seconds <= widget.flashEndTime ||
+            seconds > widget.flashStartTime) {
+          _isRed = false;
         }
+
+        return Text(
+          timeString,
+          style: TextStyle(
+            color: _isRed ? widget.flashColor : widget.defaultColor,
+            fontWeight: FontWeight.bold,
+            fontSize: widget.fontSize,
+          ),
+        );
       },
     );
   }
