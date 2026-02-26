@@ -64,7 +64,7 @@ class _MatchTimelineState extends State<MatchTimeline> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     blurRadius: 6,
                     offset: const Offset(0, 3),
                   ),
@@ -95,9 +95,9 @@ class _MatchTimelineState extends State<MatchTimeline> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.black.withOpacity(0.3),
+                            Colors.black.withValues(alpha: 0.3),
                             Colors.transparent,
-                            Colors.black.withOpacity(0.3),
+                            Colors.black.withValues(alpha: 0.3),
                           ],
                         ),
                       ),
@@ -117,7 +117,7 @@ class _MatchTimelineState extends State<MatchTimeline> {
                         borderRadius: BorderRadius.circular(1),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             blurRadius: 4,
                           ),
                         ],
@@ -145,10 +145,10 @@ class _MatchTimelineState extends State<MatchTimeline> {
 
     // Dynamic color based on state
     Color segmentColor = isPassed 
-        ? color.withOpacity(0.15) 
+        ? color.withValues(alpha: 0.15) 
         : isActive 
-            ? color.withOpacity(0.7) 
-            : color.withOpacity(0.35);
+            ? color.withValues(alpha: 0.7) 
+            : color.withValues(alpha: 0.35);
 
     return Expanded(
       flex: duration,
@@ -157,7 +157,7 @@ class _MatchTimelineState extends State<MatchTimeline> {
           color: segmentColor,
           border: Border(
             right: BorderSide(
-              color: LianaColors.border.withOpacity(0.4),
+              color: LianaColors.border.withValues(alpha: 0.4),
               width: 1,
             ),
           ),
@@ -168,7 +168,7 @@ class _MatchTimelineState extends State<MatchTimeline> {
             style: TextStyle(
               color: isActive 
                   ? Colors.white 
-                  : LianaColors.buttonText.withOpacity(isPassed ? 0.3 : 0.6),
+                  : LianaColors.buttonText.withValues(alpha: isPassed ? 0.3 : 0.6),
               fontSize: 12,
               fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
               letterSpacing: 1.1,
