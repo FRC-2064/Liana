@@ -22,7 +22,11 @@ class NtFactory {
     final fullTopicName = _fullTopic(name);
 
     if (_entries.containsKey(fullTopicName)) {
-      return _entries[fullTopicName] as NtEntry<T>;
+      final entry = _entries[fullTopicName]!;
+      if (!entry.isDisposed) {
+        return entry as NtEntry<T>;
+      }
+      _entries.remove(fullTopicName);
     }
 
     final type = _getTypeFromValue(defaultValue);
@@ -36,6 +40,13 @@ class NtFactory {
 
     _entries[fullTopicName] = newEntry;
     return newEntry;
+  }
+
+  void clear() {
+    for (final entry in _entries.values) {
+      entry.dispose();
+    }
+    _entries.clear();
   }
 
   String _fullTopic(String name) {

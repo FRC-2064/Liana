@@ -70,16 +70,16 @@ class _NtStatusButtonState<T> extends State<NtStatusButton<T>> {
       stream: _entry.stream(),
       initialData: _entry.value,
       builder: (context, snapshot) {
-        final bool hasData = snapshot.data != null;
-        final bool isSelected = hasData && snapshot.data == widget.valueToSet;
-        final Color bgColor = !hasData
+        final bool isSelected =
+            snapshot.hasData && snapshot.data == widget.valueToSet;
+        final Color bgColor = !snapshot.hasData
             ? widget.missingDataColor
             : (isSelected ? widget.selectedColor : widget.unselectedColor);
-        final Color textColor = !hasData
+        final Color textColor = !snapshot.hasData
             ? widget.missingDataTextColor
             : (isSelected
-                ? widget.selectedTextColor
-                : widget.unselectedTextColor);
+                  ? widget.selectedTextColor
+                  : widget.unselectedTextColor);
         final Widget child = Text(
           widget.text,
           style: TextStyle(
