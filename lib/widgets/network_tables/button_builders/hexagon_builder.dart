@@ -14,8 +14,14 @@ class HexagonBuilder extends NtButtonBuilder {
   });
 
   @override
-  Widget build(BuildContext context, bool isSelected, Color backgroundColor,
-      VoidCallback onPress, Widget child) {
+  Widget build(
+    BuildContext context, {
+    required bool isSelected,
+    required bool isMissing,
+    required Color backgroundColor,
+    required VoidCallback onPressed,
+    required Widget child,
+  }) {
     return CustomPaint(
       painter: HexagonPainter(
         color: backgroundColor,
@@ -29,7 +35,7 @@ class HexagonBuilder extends NtButtonBuilder {
             padding: EdgeInsets.zero,
             shape: const CircleBorder(),
           ),
-          onPressed: onPress,
+          onPressed: onPressed,
           child: child,
         ),
       ),
@@ -66,8 +72,7 @@ class HexagonPainter extends CustomPainter {
     canvas.drawPath(path, borderPaint);
   }
 
-  /// Takes in a [size] as the diameter of the
-  /// circle that the hexagon is inscribed within.
+
   Path _createHexagonPath(Size size) {
     final double w = size.width;
     final double h = size.height;

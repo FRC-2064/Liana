@@ -33,7 +33,6 @@ jobs:
 
       - name: Run Flutter tests
         run: flutter test
-        continue-on-error: true
 
       - name: Build Flutter App
         run: flutter build windows --release

@@ -27,10 +27,7 @@ class UpdateToast extends StatelessWidget {
         decoration: BoxDecoration(
           color: LianaColors.cardBackground,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: LianaColors.statusSelected,
-            width: 2,
-          ),
+          border: Border.all(color: LianaColors.statusSelected, width: 2),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.3),
@@ -45,11 +42,7 @@ class UpdateToast extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.update,
-                  color: LianaColors.statusSelected,
-                  size: 32,
-                ),
+                Icon(Icons.update, color: LianaColors.statusSelected, size: 32),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -62,10 +55,7 @@ class UpdateToast extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(
-                    Icons.close,
-                    color: LianaColors.buttonText,
-                  ),
+                  icon: Icon(Icons.close, color: LianaColors.buttonText),
                   onPressed: onDismiss,
                 ),
               ],
@@ -73,10 +63,7 @@ class UpdateToast extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               'Version ${updateInfo.version} is now available!',
-              style: TextStyle(
-                fontSize: 16,
-                color: LianaColors.buttonText,
-              ),
+              style: TextStyle(fontSize: 16, color: LianaColors.buttonText),
             ),
             const SizedBox(height: 16),
             Row(
@@ -86,16 +73,14 @@ class UpdateToast extends StatelessWidget {
                   onPressed: onDismiss,
                   child: Text(
                     'Later',
-                    style: TextStyle(
-                      color: LianaColors.buttonText,
-                    ),
+                    style: TextStyle(color: LianaColors.buttonText),
                   ),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () async {
                     final success = await updateService.downloadAndInstall(
-                      updateInfo.donwloadURL,
+                      updateInfo.downloadURL,
                     );
                     if (success) {
                       onDismiss();

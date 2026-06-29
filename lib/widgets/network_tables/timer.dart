@@ -1,95 +1,107 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:liana/services/network_tables/liana.dart';
-import 'package:liana/services/network_tables/nt_entry.dart';
+import 'package:liana/services/network_tables/nt_topic.dart';
+import 'package:liana/utils/liana_colors.dart';
+import 'package:liana/widgets/network_tables/nt_value_builder.dart';
 
 /// [Widget] to display the remaining match time.
-class NtTimer extends StatefulWidget {
-  const NtTimer({
-    super.key,
-    required this.topicName,
-    this.defaultValue = '-1',
-    this.fontSize = 125.0,
-    this.defaultColor = Colors.white,
-    this.flashColor = Colors.red,
-    this.flashStartTime = 30.0,
-    this.flashEndTime = 25.0,
-  });
-
-  final String topicName;
-  final String defaultValue;
+class NtTimer extends StatelessWidget {
+  final NtTopic<double> topic;
   final double fontSize;
   final Color defaultColor;
   final Color flashColor;
   final double flashStartTime;
   final double flashEndTime;
 
+  const NtTimer({
+    required this.topic,
+    this.fontSize = 100,
+    this.defaultColor = Colors.white,
+    this.flashColor = LianaColors.statusSelected,
+    this.flashStartTime = 30,
+    this.flashEndTime = 25,
+    super.key,
+  });
+
   @override
-  State<NtTimer> createState() => _NtTimerState();
-}
-
-class _NtTimerState extends State<NtTimer> {
-  late final NtEntry<double> _entry;
-  bool _isRed = false;
-  int _lastSecond = -1;
-
-  @override
-  void initState() {
-    super.initState();
-    final liana = Provider.of<Liana>(context, listen: false);
-    
-    double initialValue = -1.0;
-    try {
-      initialValue = double.parse(widget.defaultValue);
-    } catch (_) {}
-
-    _entry = liana.getEntry<double>(
-      widget.topicName,
-      defaultValue: initialValue,
+  Widget build(BuildContext context) {
+    return NtValueBuilder<double>(
+      topic: topic,
+      builder: (context, value, entry) => _FlashingTime(
+        seconds: value.value,
+        fontSize: fontSize,
+        defaultColor: defaultColor,
+        flashColor: flashColor,
+        flashStartTime: flashStartTime,
+        flashEndTime: flashEndTime,
+      ),
     );
   }
+}
 
-  String _formatTime(double seconds) {
-    if (seconds < 0) {
-      return '--:--';
+class _FlashingTime extends StatefulWidget {
+  final double? seconds;
+  final double fontSize;
+  final Color defaultColor;
+  final Color flashColor;
+  final double flashStartTime;
+  final double flashEndTime;
+
+  const _FlashingTime({
+    required this.seconds,
+    required this.fontSize,
+    required this.defaultColor,
+    required this.flashColor,
+    required this.flashStartTime,
+    required this.flashEndTime,
+  });
+
+  @override
+  State<_FlashingTime> createState() => _FlashingTimeState();
+}
+
+class _FlashingTimeState extends State<_FlashingTime> {
+  bool _flash = false;
+  int? _lastSecond;
+
+  @override
+  void didUpdateWidget(covariant _FlashingTime oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final seconds = widget.seconds;
+    if (seconds == null) {
+      _flash = false;
+      _lastSecond = null;
+      return;
     }
-    int totalSeconds = seconds.floor();
-    int minutes = totalSeconds ~/ 60;
-    int remainingSeconds = totalSeconds % 60;
+    final second = seconds.floor();
+    if (seconds <= widget.flashStartTime &&
+        seconds > widget.flashEndTime &&
+        second != _lastSecond) {
+      _flash = !_flash;
+    } else if (seconds <= widget.flashEndTime ||
+        seconds > widget.flashStartTime) {
+      _flash = false;
+    }
+    _lastSecond = second;
+  }
 
-    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
+  String _format(double? seconds) {
+    if (seconds == null || seconds < 0) return '--:--';
+    final total = seconds.floor();
+    return '${total ~/ 60}:${(total % 60).toString().padLeft(2, '0')}';
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<double>(
-      stream: _entry.stream(),
-      initialData: _entry.value,
-      builder: (context, snapshot) {
-        double seconds = snapshot.data ?? -1.0;
-        String timeString = _formatTime(seconds);
-
-        int currentSecond = seconds.floor();
-
-        if (seconds <= widget.flashStartTime &&
-            seconds > widget.flashEndTime &&
-            currentSecond != _lastSecond) {
-          _isRed = !_isRed;
-          _lastSecond = currentSecond;
-        } else if (seconds <= widget.flashEndTime ||
-            seconds > widget.flashStartTime) {
-          _isRed = false;
-        }
-
-        return Text(
-          timeString,
-          style: TextStyle(
-            color: _isRed ? widget.flashColor : widget.defaultColor,
-            fontWeight: FontWeight.bold,
-            fontSize: widget.fontSize,
-          ),
-        );
-      },
+    return Center(
+      child: Text(
+        _format(widget.seconds),
+        style: TextStyle(
+          color: _flash ? widget.flashColor : widget.defaultColor,
+          fontWeight: FontWeight.w800,
+          fontSize: widget.fontSize,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        ),
+      ),
     );
   }
 }

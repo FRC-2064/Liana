@@ -1,172 +1,160 @@
-import 'package:liana/services/network_tables/liana.dart';
-import 'package:liana/services/network_tables/nt_entry.dart';
-import 'package:liana/utils/liana_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:liana/services/network_tables/nt_topic.dart';
+import 'package:liana/utils/liana_colors.dart';
+import 'package:liana/utils/nt_widget_size.dart';
 import 'package:liana/widgets/network_tables/nt_increment_button.dart';
-import 'package:provider/provider.dart';
+import 'package:liana/widgets/network_tables/nt_value_builder.dart';
 
-class NtAdjustment extends StatefulWidget {
-  const NtAdjustment({
-    super.key,
-    required this.topicName,
-    required this.incrementAmount,
-    required this.defaultValue,
-    required this.title,
-    this.positiveText = '+',
-    this.negativeText = '-',
-    this.width = 120.0,
-    this.height = 70.0,
-    this.titleFontSize = 24.0,
-    this.valueFontSize = 32.0,
-    this.positiveColor = LianaColors.cardBackground,
-    this.negativeColor = LianaColors.cardBackground,
-    this.minValue = -100.0,
-    this.maxValue = 100.0,
-  });
-
-  final String topicName;
+/// A [Widget] to display and adjust a numerical value from
+/// a Network Table topic using increment and decrement buttons.
+class NtAdjustment extends StatelessWidget {
+  final NtTopic<double> topic;
   final double incrementAmount;
-  final double defaultValue;
   final String title;
+  final NtWidgetSize size;
   final String positiveText;
   final String negativeText;
-  final double width;
-  final double height;
-  final double titleFontSize;
-  final double valueFontSize;
+  final double? width;
+  final double? height;
+  final double? titleFontSize;
+  final double? valueFontSize;
   final Color positiveColor;
   final Color negativeColor;
   final double minValue;
   final double maxValue;
 
-  @override
-  State<NtAdjustment> createState() => _NtAdjustmentState();
-}
+  const NtAdjustment({
+    required this.topic,
+    required this.incrementAmount,
+    required this.title,
+    this.size = NtWidgetSize.medium,
+    this.positiveText = '+',
+    this.negativeText = '-',
+    this.width,
+    this.height,
+    this.titleFontSize,
+    this.valueFontSize,
+    this.positiveColor = LianaColors.cardBackground,
+    this.negativeColor = LianaColors.cardBackground,
+    this.minValue = -100,
+    this.maxValue = 100,
+    super.key,
+  });
 
-class _NtAdjustmentState extends State<NtAdjustment> {
-  late final NtEntry<double> _entry;
-  late final Liana _liana;
+  double get _buttonWidth =>
+      width ??
+      switch (size) {
+        NtWidgetSize.small => 70,
+        NtWidgetSize.medium => 100,
+        NtWidgetSize.large => 130,
+      };
 
-  @override
-  void initState() {
-    super.initState();
-    _liana = Provider.of<Liana>(context, listen: false);
-    _entry = _liana.getEntry(
-      widget.topicName,
-      defaultValue: widget.defaultValue,
-    );
-  }
+  double get _buttonHeight =>
+      height ??
+      switch (size) {
+        NtWidgetSize.small => 50,
+        NtWidgetSize.medium => 70,
+        NtWidgetSize.large => 90,
+      };
+
+  double get _titleSize =>
+      titleFontSize ??
+      switch (size) {
+        NtWidgetSize.small => 18,
+        NtWidgetSize.medium => 24,
+        NtWidgetSize.large => 30,
+      };
+
+  double get _valueSize =>
+      valueFontSize ??
+      switch (size) {
+        NtWidgetSize.small => 24,
+        NtWidgetSize.medium => 32,
+        NtWidgetSize.large => 40,
+      };
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
-      stream: _liana.connectionStatus(),
-      initialData: _liana.isConnected,
-      builder: (context, connectionSnapshot) {
-        final bool isConnected = connectionSnapshot.data ?? false;
-
-        return StreamBuilder<double>(
-          stream: _entry.stream(),
-          initialData: _entry.value,
-          builder: (context, snapshot) {
-            // Only show robot value when connected, otherwise show default
-            final currentValue = isConnected
-                ? (snapshot.data ?? widget.defaultValue)
-                : widget.defaultValue;
-
-            // Calculate progress bar percentage (-1 to 1 range)
-            final double normalizedValue = currentValue / widget.maxValue.abs();
-            final double clampedNormalized = normalizedValue.clamp(-1.0, 1.0);
-
-            return Column(
-              mainAxisSize: MainAxisSize.min,
+    return NtValueBuilder<double>(
+      topic: topic,
+      builder: (context, current, entry) {
+        final value = current.value;
+        final normalized = value == null
+            ? 0.0
+            : (value / maxValue.abs()).clamp(-1.0, 1.0);
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: _titleSize,
+                fontWeight: FontWeight.bold,
+                color: current.hasValue
+                    ? LianaColors.buttonText
+                    : LianaColors.missing,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  widget.title,
-                  style: TextStyle(
-                    fontSize: widget.titleFontSize,
-                    fontWeight: FontWeight.bold,
-                    color: isConnected
-                        ? LianaColors.buttonText
-                        : LianaColors.missing,
-                  ),
+                NtIncrementButton(
+                  topic: topic,
+                  text: negativeText,
+                  incrementAmount: -incrementAmount,
+                  size: size,
+                  activeColor: negativeColor,
+                  width: _buttonWidth,
+                  height: _buttonHeight,
+                  minValue: minValue,
+                  maxValue: maxValue,
                 ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                const SizedBox(width: 24),
+                Column(
                   children: [
-                    NtIncrementButton(
-                      text: widget.negativeText,
-                      incrementAmount: widget.incrementAmount * -1,
-                      topicName: widget.topicName,
-                      activeColor: widget.negativeColor,
-                      inactiveColor: LianaColors.missing,
-                      inactiveTextColor: LianaColors.buttonText,
-                      activeTextColor: LianaColors.buttonText,
-                      fontSize: 18,
-                      height: widget.height,
-                      width: widget.width,
-                      minValue: widget.minValue,
-                      maxValue: widget.maxValue,
-                    ),
-                    const SizedBox(width: 24),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 200,
-                          child: Center(
-                            child: Text(
-                              currentValue.toStringAsFixed(1),
-                              key: ValueKey(currentValue),
-                              style: TextStyle(
-                                fontSize: widget.valueFontSize,
-                                fontWeight: FontWeight.bold,
-                                color: isConnected
-                                    ? LianaColors.buttonText
-                                    : LianaColors.missing,
-                              ),
-                            ),
-                          ),
+                    SizedBox(
+                      width: 200,
+                      child: Text(
+                        value?.toStringAsFixed(1) ?? '--',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: _valueSize,
+                          fontWeight: FontWeight.bold,
+                          color: current.hasValue
+                              ? LianaColors.buttonText
+                              : LianaColors.missing,
                         ),
-                        const SizedBox(height: 8),
-                        // Progress bar
-                        SizedBox(
-                          width: 200,
-                          height: 12,
-                          child: CustomPaint(
-                            painter: _ProgressBarPainter(
-                              value: clampedNormalized,
-                              positiveColor: widget.positiveColor,
-                              negativeColor: widget.negativeColor,
-                              backgroundColor: LianaColors.background,
-                              borderColor: LianaColors.border,
-                              isConnected: isConnected,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    const SizedBox(width: 24),
-                    NtIncrementButton(
-                      text: widget.positiveText,
-                      incrementAmount: widget.incrementAmount,
-                      topicName: widget.topicName,
-                      activeColor: widget.positiveColor,
-                      inactiveColor: LianaColors.missing,
-                      inactiveTextColor: LianaColors.buttonText,
-                      activeTextColor: LianaColors.buttonText,
-                      fontSize: 18,
-                      height: widget.height,
-                      width: widget.width,
-                      minValue: widget.minValue,
-                      maxValue: widget.maxValue,
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: 200,
+                      height: 12,
+                      child: CustomPaint(
+                        painter: _ProgressBarPainter(
+                          value: normalized,
+                          hasValue: current.hasValue,
+                        ),
+                      ),
                     ),
                   ],
                 ),
+                const SizedBox(width: 24),
+                NtIncrementButton(
+                  topic: topic,
+                  text: positiveText,
+                  incrementAmount: incrementAmount,
+                  size: size,
+                  activeColor: positiveColor,
+                  width: _buttonWidth,
+                  height: _buttonHeight,
+                  minValue: minValue,
+                  maxValue: maxValue,
+                ),
               ],
-            );
-          },
+            ),
+          ],
         );
       },
     );
@@ -174,107 +162,36 @@ class _NtAdjustmentState extends State<NtAdjustment> {
 }
 
 class _ProgressBarPainter extends CustomPainter {
-  final double value; // -1 to 1
-  final Color positiveColor;
-  final Color negativeColor;
-  final Color backgroundColor;
-  final Color borderColor;
-  final bool isConnected;
+  final double value;
+  final bool hasValue;
 
-  _ProgressBarPainter({
-    required this.value,
-    required this.positiveColor,
-    required this.negativeColor,
-    required this.backgroundColor,
-    required this.borderColor,
-    required this.isConnected,
-  });
+  const _ProgressBarPainter({required this.value, required this.hasValue});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.fill;
-    final borderPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..color = borderColor;
-
-    final centerX = size.width / 2;
-    final radius = 6.0;
-
-    // Draw background with rounded corners
-    paint.color = backgroundColor;
-    final rrect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Radius.circular(radius),
+    final background = RRect.fromRectAndRadius(
+      Offset.zero & size,
+      const Radius.circular(6),
     );
-    canvas.drawRRect(rrect, paint);
-
-    if (isConnected) {
-      // Draw filled portion - use red accent color for both directions
-      paint.color = LianaColors.headerText; // Red accent color
-
-      if (value > 0) {
-        // Fill to the right - sharp edge at center, rounded on right
-        final fillWidth = (size.width / 2) * value;
-
-        final path = Path()
-          ..moveTo(centerX, 0)
-          ..lineTo(centerX + fillWidth - radius, 0)
-          ..arcToPoint(
-            Offset(centerX + fillWidth, radius),
-            radius: Radius.circular(radius),
-          )
-          ..lineTo(centerX + fillWidth, size.height - radius)
-          ..arcToPoint(
-            Offset(centerX + fillWidth - radius, size.height),
-            radius: Radius.circular(radius),
-          )
-          ..lineTo(centerX, size.height)
-          ..close();
-
-        canvas.drawPath(path, paint);
-      } else if (value < 0) {
-        // Fill to the left - sharp edge at center, rounded on left
-        final fillWidth = (size.width / 2) * value.abs();
-
-        final path = Path()
-          ..moveTo(centerX, 0)
-          ..lineTo(centerX - fillWidth + radius, 0)
-          ..arcToPoint(
-            Offset(centerX - fillWidth, radius),
-            radius: Radius.circular(radius),
-            clockwise: false,
-          )
-          ..lineTo(centerX - fillWidth, size.height - radius)
-          ..arcToPoint(
-            Offset(centerX - fillWidth + radius, size.height),
-            radius: Radius.circular(radius),
-            clockwise: false,
-          )
-          ..lineTo(centerX, size.height)
-          ..close();
-
-        canvas.drawPath(path, paint);
-      }
-    }
-
-    // Draw center line (thicker and more defined)
-    paint.color = borderColor;
-    paint.strokeWidth = 3;
-    paint.style = PaintingStyle.stroke;
-    canvas.drawLine(
-      Offset(centerX, 0),
-      Offset(centerX, size.height),
-      paint,
+    canvas.drawRRect(background, Paint()..color = LianaColors.background);
+    canvas.drawRRect(
+      background,
+      Paint()
+        ..color = LianaColors.border
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5,
     );
-
-    // Draw border
-    canvas.drawRRect(rrect, borderPaint);
+    if (!hasValue || value == 0) return;
+    final center = size.width / 2;
+    final width = center * value.abs();
+    final rect = value > 0
+        ? Rect.fromLTWH(center, 0, width, size.height)
+        : Rect.fromLTWH(center - width, 0, width, size.height);
+    canvas.drawRect(rect, Paint()..color = LianaColors.headerText);
   }
 
   @override
-  bool shouldRepaint(_ProgressBarPainter oldDelegate) {
-    return oldDelegate.value != value ||
-           oldDelegate.isConnected != isConnected;
+  bool shouldRepaint(covariant _ProgressBarPainter oldDelegate) {
+    return value != oldDelegate.value || hasValue != oldDelegate.hasValue;
   }
 }

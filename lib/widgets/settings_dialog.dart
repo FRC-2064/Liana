@@ -1,253 +1,187 @@
-import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import '../utils/liana_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:liana/app/app_settings.dart';
+import 'package:liana/app/layout_definition.dart';
+import 'package:liana/utils/liana_colors.dart';
+import 'package:liana/utils/liana_connection_mode.dart';
 
 /// [Widget] to display settings as a modal. This includes
 /// the team number, which builds the robot ip, whether we are
 /// looking at the robot or a sim, and where the GIFs for
 /// the auto routines are stored.
 class SettingsDialog extends StatefulWidget {
+  final AppSettings settings;
+  final List<LayoutDefinition> layouts;
+
   const SettingsDialog({
-    required this.teamNumber,
-    required this.isRobot,
-    required this.gifBasePath,
+    required this.settings,
+    required this.layouts,
     super.key,
   });
-
-  final String teamNumber;
-  final bool isRobot;
-  final String gifBasePath;
 
   @override
   State<SettingsDialog> createState() => _SettingsDialogState();
 }
 
 class _SettingsDialogState extends State<SettingsDialog> {
-  final TextEditingController _teamNumberController = TextEditingController();
-  final TextEditingController _gifPathController = TextEditingController();
-  bool _isRobot = false;
+  late final TextEditingController _teamController;
+  late final TextEditingController _gifController;
+  late LianaConnectionMode _mode;
+  late String _layoutId;
 
-  /// Builds the [_robotIp] from the given
-  /// team number inside the team number text
-  /// box.
-  String get _robotIp {
-    final team = _teamNumberController.text;
-    if (team.length == 4) {
-      final firstTwo = team.substring(0, 2);
-      final lastTwo = team.substring(2, 4);
-      return "10.$firstTwo.$lastTwo.2";
-    }
-    return "Invalid team number";
-  }
+  int? get _team => int.tryParse(_teamController.text);
+  bool get _teamValid => AppSettings.isValidTeamNumber(_team);
+  bool get _gifValid => _gifController.text.trim().isNotEmpty;
+  bool get _valid => _teamValid && _gifValid;
 
   @override
   void initState() {
     super.initState();
-    _teamNumberController.text = widget.teamNumber;
-    _gifPathController.text = widget.gifBasePath;
-    _isRobot = widget.isRobot;
+    _teamController = TextEditingController(
+      text: widget.settings.teamNumber.toString(),
+    );
+    _gifController = TextEditingController(text: widget.settings.gifBasePath);
+    _mode = widget.settings.mode;
+    _layoutId = widget.settings.layoutId;
+    _teamController.addListener(_refresh);
+    _gifController.addListener(_refresh);
   }
+
+  void _refresh() => setState(() {});
 
   @override
   void dispose() {
-    _teamNumberController.dispose();
-    _gifPathController.dispose();
+    _teamController.removeListener(_refresh);
+    _gifController.removeListener(_refresh);
+    _teamController.dispose();
+    _gifController.dispose();
     super.dispose();
   }
 
   Future<void> _pickFolder() async {
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-    if (selectedDirectory != null) {
-      setState(() {
-        _gifPathController.text = selectedDirectory;
-      });
-    }
+    final path = await FilePicker.getDirectoryPath();
+    if (path != null) _gifController.text = path;
+  }
+
+  void _save() {
+    if (!_valid) return;
+    Navigator.of(context).pop(
+      AppSettings(
+        teamNumber: _team!,
+        mode: _mode,
+        gifBasePath: _gifController.text.trim(),
+        layoutId: _layoutId,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: LianaColors.background,
-      title: Text(
-        "Settings",
-        style: TextStyle(
-          fontSize: 30,
-          fontWeight: FontWeight.bold,
-          color: LianaColors.headerText,
-        ),
+      backgroundColor: LianaColors.surface,
+      title: const Text(
+        'Settings',
+        style: TextStyle(color: LianaColors.headerText),
       ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _teamNumberController,
-              style: TextStyle(color: LianaColors.buttonText),
-              decoration: InputDecoration(
-                labelText: "Team Number",
-                labelStyle: TextStyle(color: LianaColors.headerText),
-                hintStyle: TextStyle(color: LianaColors.buttonText),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: LianaColors.headerText),
+      content: SizedBox(
+        width: 560,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextField(
+                key: const Key('team-number-field'),
+                controller: _teamController,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                keyboardType: TextInputType.number,
+                style: const TextStyle(color: LianaColors.onSurface),
+                decoration: InputDecoration(
+                  labelText: 'Team number',
+                  errorText: _teamValid
+                      ? null
+                      : 'Enter a valid team number (1–25599)',
+                  helperText: _teamValid
+                      ? 'Robot address: ${AppSettings.robotAddressForTeam(_team!)}'
+                      : null,
                 ),
               ),
-              keyboardType: TextInputType.number,
-              maxLength: 4,
-            ),
-            const SizedBox(height: 16),
-            RadioToggleSwitch(
-              isRobot: _isRobot,
-              onChange: (value) {
-                setState(() {
-                  _isRobot = value;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            if (_isRobot && _teamNumberController.text.length == 4)
-              Text(
-                "Robot IP: $_robotIp",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: LianaColors.buttonText,
+              const SizedBox(height: 16),
+              SegmentedButton<LianaConnectionMode>(
+                key: const Key('connection-mode-field'),
+                segments: const [
+                  ButtonSegment(
+                    value: LianaConnectionMode.robot,
+                    label: Text('Robot'),
+                  ),
+                  ButtonSegment(
+                    value: LianaConnectionMode.simulation,
+                    label: Text('Simulation'),
+                  ),
+                  ButtonSegment(
+                    value: LianaConnectionMode.uiTest,
+                    label: Text('UI Test'),
+                  ),
+                ],
+                selected: {_mode},
+                onSelectionChanged: (selection) =>
+                    setState(() => _mode = selection.single),
+              ),
+              if (_mode != widget.settings.mode) ...[
+                const SizedBox(height: 8),
+                const Text(
+                  'Connection mode changes take effect after restart.',
+                  key: Key('restart-required-message'),
+                  style: TextStyle(color: LianaColors.tertiary),
                 ),
-              )
-            else
-              const SizedBox(height: 29),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _gifPathController,
-              style: TextStyle(color: LianaColors.buttonText),
-              decoration: InputDecoration(
-                labelText: "GIF Path",
-                labelStyle: TextStyle(color: LianaColors.headerText),
-                hintStyle: TextStyle(color: LianaColors.buttonText),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: LianaColors.headerText),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.folder, color: LianaColors.buttonText),
-                  onPressed: _pickFolder,
+              ],
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                key: const Key('layout-field'),
+                initialValue: _layoutId,
+                decoration: const InputDecoration(labelText: 'Active layout'),
+                dropdownColor: LianaColors.surface,
+                items: widget.layouts
+                    .map(
+                      (layout) => DropdownMenuItem(
+                        value: layout.id,
+                        child: Text(layout.name),
+                      ),
+                    )
+                    .toList(growable: false),
+                onChanged: (value) {
+                  if (value != null) setState(() => _layoutId = value);
+                },
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                key: const Key('gif-path-field'),
+                controller: _gifController,
+                style: const TextStyle(color: LianaColors.onSurface),
+                decoration: InputDecoration(
+                  labelText: 'GIF directory',
+                  errorText: _gifValid ? null : 'GIF directory is required',
+                  suffixIcon: IconButton(
+                    onPressed: _pickFolder,
+                    icon: const Icon(Icons.folder_open),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            final ip = _isRobot ? _robotIp : "127.0.0.1";
-            Navigator.of(context).pop({
-              'ip': ip,
-              'teamNumber': _teamNumberController.text,
-              'isRobot': _isRobot,
-              'gifPath': _gifPathController.text,
-            });
-          },
-          child: Text(
-            "Save",
-            style: TextStyle(color: LianaColors.buttonText),
-          ),
-        ),
-        TextButton(
+        OutlinedButton(
+          key: const Key('cancel-settings'),
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            "Cancel",
-            style: TextStyle(color: LianaColors.buttonText),
-          ),
+          child: const Text('Cancel'),
         ),
-      ],
-    );
-  }
-}
-
-class RadioToggleSwitch extends StatefulWidget {
-  final bool isRobot;
-  final ValueChanged<bool> onChange;
-
-  const RadioToggleSwitch({
-    super.key,
-    required this.isRobot,
-    required this.onChange,
-  });
-
-  @override
-  State<RadioToggleSwitch> createState() => _RadioToggleSwitchState();
-}
-
-class _RadioToggleSwitchState extends State<RadioToggleSwitch> {
-  late bool _isRobot;
-
-  @override
-  void initState() {
-    super.initState();
-    _isRobot = widget.isRobot;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          height: 35,
-          width: 100,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(10),
-                bottomLeft: Radius.circular(10),
-              ),
-              border: Border.all(color: LianaColors.border),
-              color: !_isRobot
-                  ? LianaColors.statusSelected
-                  : LianaColors.statusUnselected),
-          child: TextButton(
-            onPressed: () => setState(() {
-              _isRobot = false;
-              widget.onChange(false);
-            }),
-            child: Text(
-              "Simulation",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color:
-                    !_isRobot ? LianaColors.background : LianaColors.buttonText,
-              ),
-            ),
-          ),
-        ),
-        Container(
-          height: 35,
-          width: 100,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(10),
-                bottomRight: Radius.circular(10),
-              ),
-              border: Border.all(color: LianaColors.border),
-              color: _isRobot
-                  ? LianaColors.statusSelected
-                  : LianaColors.statusUnselected),
-          child: TextButton(
-            onPressed: () => setState(() {
-              _isRobot = true;
-              widget.onChange(true);
-            }),
-            child: Text(
-              "Robot",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color:
-                    _isRobot ? LianaColors.background : LianaColors.buttonText,
-              ),
-            ),
-          ),
+        FilledButton(
+          key: const Key('save-settings'),
+          onPressed: _valid ? _save : null,
+          child: const Text('Save'),
         ),
       ],
     );
